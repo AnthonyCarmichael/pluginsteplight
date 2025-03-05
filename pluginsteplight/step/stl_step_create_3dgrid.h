@@ -1,5 +1,5 @@
-#ifndef STL_STEP_CREATE_3D_GRID_H
-#define STL_STEP_CREATE_3D_GRID_H
+#ifndef STL_STEP_CREATE_3DGRID_H
+#define STL_STEP_CREATE_3DGRID_H
 
 #include "ct_itemdrawable/ct_grid3d.h"
 #include "ct_step/abstract/ct_abstractstep.h"

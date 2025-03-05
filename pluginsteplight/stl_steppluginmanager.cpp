@@ -1,6 +1,6 @@
 #include "stl_steppluginmanager.h"
 #include "step/st_stl_step_helloworld.h"
-#include "step/stl_step_create_3d_grid.h"
+#include "step/stl_step_create_3dgrid.h"
 
 
 ST_STL_StepPluginManager::ST_STL_StepPluginManager() : CT_AbstractStepPlugin()

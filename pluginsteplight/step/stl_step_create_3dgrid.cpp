@@ -1,11 +1,11 @@
-#include "stl_step_create_3d_grid.h"
+#include "stl_step_create_3dgrid.h"
 #include "ct_global/ct_context.h"
 #include "ct_itemdrawable/tools/gridtools/ct_grid3dwootraversalalgorithm.h"
 #include "loginterface.h"
 #include "stl_3dgrid.h"
 #include "stl_grid3dbeamvisitor.h"
 #include <omp.h>
-
+#include <thread>
 STL_STEP_Create_3D_Grid::STL_STEP_Create_3D_Grid(): SuperClass()
 {
     _grid_resolution = 0.2f;
@@ -105,19 +105,18 @@ void STL_STEP_Create_3D_Grid::compute()
         size_t n_points = inPointCloud->pointCloudIndex()->size();
         CT_PointIterator itPoint(inPointCloud->pointCloudIndex());
 
-        //int* ptrVect = grid_3d->get_data();
-        //int i;
-        //#pragma omp parallel for reduction(+:ptrVect[0:n_points])
-        for(  CT_PointIterator itPoint(inPointCloud->pointCloudIndex());itPoint.hasNext();i_point++ )
+
+        #pragma omp parallel for
+        for(  int i = 0; i < n_points; i++ )
         {
             if( i_point % 100 == 0 )
             {
                 setProgress( static_cast<float>(i_point) * 100.0f / static_cast<float>(n_points) );
             }
 
-            if( isStopped() )
+            if (isStopped())
             {
-                return ;
+                continue;
             }
 
 
@@ -129,10 +128,24 @@ void STL_STEP_Create_3D_Grid::compute()
 
             if( normalLenght != 0.0 )
             {
+                /*
                 currentNormal /= normalLenght;
                 CT_Beam beam_01( currentPoint, currentNormal );
                 CT_Beam beam_02( currentPoint, -currentNormal );
 
+                auto wooCompute = std::bind(&CT_Grid3DWooTraversalAlgorithm::compute, woo);
+
+                std::thread t1([&]() { woo.compute(beam_01); });
+                std::thread t2([&]() { woo.compute(beam_02); });
+
+                t1.join();
+                t2.join();
+                */
+                currentNormal /= normalLenght;
+                CT_Beam beam_01(currentPoint, currentNormal);
+                CT_Beam beam_02(currentPoint, -currentNormal);
+
+                // Appel direct dans chaque thread
                 woo.compute(beam_01);
                 woo.compute(beam_02);
             }

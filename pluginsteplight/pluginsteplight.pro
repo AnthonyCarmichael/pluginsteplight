@@ -4,7 +4,7 @@ MUST_USE_OPENCV = 1
 
 include(../../computreev6/config/plugin_shared.pri)
 
-TARGET = plug_stepv6light
+TARGET = plug_steplight
 
 QT += concurrent
 
@@ -14,7 +14,8 @@ QMAKE_CXXFLAGS += -openmp
 HEADERS += \
     $$CT_PREFIX_LIB/ctlibplugin/pluginentryinterface.h\
     step/st_stepextractcurvesfrom3dgrid.h \
-    step/stl_step_create_3d_grid.h \
+    step/stl_step_create_3dgrid.h \
+    step/stl_step_filter_3dgrid.h \
     stl_3dgrid.h \
     stl_3dgrid.hpp \
     stl_grid3dbeamvisitor.h \
@@ -25,7 +26,8 @@ HEADERS += \
 
 SOURCES += \
     step/st_stepextractcurvesfrom3dgrid.cpp \
-    step/stl_step_create_3d_grid.cpp \
+    step/stl_step_create_3dgrid.cpp \
+    step/stl_step_filter_3dgrid.cpp \
     stl_3dgrid.cpp \
     stl_grid3dbeamvisitor.cpp \
     stl_pluginentry.cpp \

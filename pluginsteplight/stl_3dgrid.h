@@ -4,6 +4,7 @@
 #include "ct_itemdrawable/ct_grid3d.h"
 #include "ct_itemdrawable/ct_pointsattributesnormal.h"
 #include "ct_itemdrawable/abstract/ct_abstractitemdrawablewithpointcloud.h"
+#include "ct_step/abstract/ct_abstractstep.h"
 
 template< class DataT >
 class STL_3DGrid : public CT_Grid3D<DataT>
@@ -104,13 +105,13 @@ public:
 
     inline Vec3d getResolutionsGrid() const { return _res; }
 
-    /*
+
     STL_3DGrid<DataT>* get_filtered_grid_using_fast_filter(double ratio_thresh,
                                                             CT_AbstractStep* step_ptr = nullptr) const;
 
-    ST_HoughSpace<DataT>* get_filtered_hs_using_fixed_threshold(DataT fixed_threshold,
+    STL_3DGrid<DataT>* get_filtered_grid_using_fixed_threshold(DataT fixed_threshold,
                                                                 CT_AbstractStep* step_ptr = nullptr) const;
-    */
+
 
     void get_local_maximas(int nei_size,
                            std::vector<Vec3i>& out_local_maximas,

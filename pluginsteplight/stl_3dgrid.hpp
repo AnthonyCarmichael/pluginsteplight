@@ -104,25 +104,34 @@ STL_3DGrid<DataT>* STL_3DGrid<DataT>::createGrid3DFromXYZCoords(double xmin,
     return new STL_3DGrid<DataT>(xmin, ymin, zmin, dimx, dimy, dimz, resolution, na, initValue);
 }
 
-/*
+
+
 template< class DataT >
-STL_3DGrid<DataT>* STL_3DGrid<DataT>::get_filtered_hs_using_fast_filter(double ratio_thresh,
+STL_3DGrid<DataT>* STL_3DGrid<DataT>::get_filtered_grid_using_fast_filter(double ratio_thresh,
                                                                               CT_AbstractStep* step_ptr) const
 {
-    STL_3DGrid<DataT>* filtered_hs = new STL_3DGrid<DataT>( *this );
+
+    STL_3DGrid<DataT>* filtered_grid  = new STL_3DGrid<DataT>( *this );
+    /*
+    STL_Grid3DBeamVisitor*  filter_visitor =  new STL_Grid3DBeamVisitor(this);
+    QList<STL_Grid3DBeamVisitor<DataT>*> filter_visitors_list;
+
+    filter_visitors_list.push_back( filter_visitor );
+
+    CT_Grid3DWooTraversalAlgorithm woo(filtered_grid,true,filter_visitors_list);
 
     // On declare tout ce qui est necessaire pour faire le raytracing 4d
     ST_VisitorGrid4DFastFilter<DataT>* filter_visitor = new ST_VisitorGrid4DFastFilter<DataT>( this );
     QList< ST_AbstractVisitorGrid4D<DataT>* > filter_visitors_list;
     filter_visitors_list.push_back( filter_visitor );
 
-    ST_VisitorGrid4DSetValue<DataT>* set_value_visitor = new ST_VisitorGrid4DSetValue<DataT>(filtered_hs, static_cast<DataT>(0) );
+    ST_VisitorGrid4DSetValue<DataT>* set_value_visitor = new ST_VisitorGrid4DSetValue<DataT>(filtered_grid , static_cast<DataT>(0) );
     QList< ST_AbstractVisitorGrid4D<DataT>* > set_value_visitors_list;
     set_value_visitors_list.push_back( set_value_visitor );
 
     // On declare un algorithme de raytracing 4D
     ST_Grid4DWooTraversalAlgorithm<DataT> traversal_algo_accumulate( this, true, filter_visitors_list );
-    ST_Grid4DWooTraversalAlgorithm<DataT> traversal_algo_set_zero( filtered_hs, false, set_value_visitors_list );
+    ST_Grid4DWooTraversalAlgorithm<DataT> traversal_algo_set_zero( filtered_grid , false, set_value_visitors_list );
 
     // -----------------------------------------------------------------------------------------------------------------
     // Loop through all points and normals of the input point cloud and start raytracing inside Hough space
@@ -140,7 +149,7 @@ STL_3DGrid<DataT>* STL_3DGrid<DataT>::get_filtered_hs_using_fast_filter(double r
 
             if( step_ptr->isStopped() )
             {
-                return filtered_hs;
+                return filtered_grid ;
             }
         }
 
@@ -152,9 +161,10 @@ STL_3DGrid<DataT>* STL_3DGrid<DataT>::get_filtered_hs_using_fast_filter(double r
 
         if( normalLenght != 0.0 )
         {
-            ST_Beam4D beam_01( currentPoint, currentNormal );
-            ST_Beam4D beam_02( currentPoint, -currentNormal );
 
+            CT_Beam beam_01( currentPoint, currentNormal );
+            CT_Beam beam_02( currentPoint, -currentNormal );
+            
             filter_visitor->setSumOfVisitedVotes( 0 );
             traversal_algo_accumulate.compute(beam_01);
             int n_votes_beam_01 = filter_visitor->sumOfVisitedVotes();
@@ -190,20 +200,21 @@ STL_3DGrid<DataT>* STL_3DGrid<DataT>::get_filtered_hs_using_fast_filter(double r
     delete filter_visitor;
     delete set_value_visitor;
 
-    filtered_hs->computeMinMax();
-
-    return filtered_hs;
-}
+    filtered_grid ->computeMinMax();
 */
 
-/*
-template<class DataT>
-STL_3DGrid<DataT>* STL_3DGrid<DataT>::get_filtered_hs_using_fixed_threshold(DataT fixed_threshold, CT_AbstractStep *step_ptr) const
-{
-    STL_3DGrid<DataT>* filtered_hs = new STL_3DGrid<DataT>( *this );
+    return filtered_grid ;
+}
 
-    cv::SparseMatConstIterator_<DataT> pixel_it = filtered_hs->_data.begin();
-    cv::SparseMatConstIterator_<DataT> pixel_it_end = filtered_hs->_data.end();
+
+
+template<class DataT>
+STL_3DGrid<DataT>* STL_3DGrid<DataT>::get_filtered_grid_using_fixed_threshold(DataT fixed_threshold, CT_AbstractStep *step_ptr) const
+{
+    STL_3DGrid<DataT>* filtered_grid = new STL_3DGrid<DataT>( *this );
+
+    cv::SparseMatConstIterator_<DataT> pixel_it = filtered_grid->_data.begin();
+    cv::SparseMatConstIterator_<DataT> pixel_it_end = filtered_grid->_data.end();
 
     for( ; pixel_it != pixel_it_end ; ++pixel_it )
     {
@@ -211,7 +222,7 @@ STL_3DGrid<DataT>* STL_3DGrid<DataT>::get_filtered_hs_using_fixed_threshold(Data
         DataT curr_val = pixel_it.template value<DataT>();
         if( curr_val < fixed_threshold )
         {
-            filtered_hs->setValue(curr_pixel_node->idx[0],
+            filtered_grid->setValue(curr_pixel_node->idx[0],
                                   curr_pixel_node->idx[1],
                                   curr_pixel_node->idx[2],
                                   curr_pixel_node->idx[3],
@@ -219,9 +230,9 @@ STL_3DGrid<DataT>* STL_3DGrid<DataT>::get_filtered_hs_using_fixed_threshold(Data
         }
     }
 
-    return filtered_hs;
+    return filtered_grid;
 }
-*/
+
 
 template< class DataT >
 void STL_3DGrid<DataT>::get_local_maximas(int nei_size,
