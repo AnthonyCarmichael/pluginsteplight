@@ -2,6 +2,7 @@
 #define STL_STEP_CREATE_3DGRID_H
 
 #include "ct_itemdrawable/ct_grid3d.h"
+#include "ct_itemdrawable/tools/gridtools/ct_grid3dwootraversalalgorithm.h"
 #include "ct_step/abstract/ct_abstractstep.h"
 #include "ct_itemdrawable/ct_pointsattributesnormal.h"
 #include "ct_itemdrawable/abstract/ct_abstractitemdrawablewithpointcloud.h"
@@ -24,6 +25,10 @@ protected:
     void fillPostInputConfigurationDialog(CT_StepConfigurableDialog* postInputConfigDialog) final;
     void compute() final;
 
+private:
+    void multithreadCompute(size_t pointsPerThread,const size_t threadNum, const CT_AbstractItemDrawableWithPointCloud* inPointCloud,const CT_PointsAttributesNormal* inNormalCloud, CT_Grid3DWooTraversalAlgorithm& woo);
+
+
 protected:
     CT_HandleInResultGroupCopy<>                                    _inResult;
     CT_HandleInStdZeroOrMoreGroup                                   _inZeroOrMoreRootGroup;
@@ -32,14 +37,7 @@ protected:
     CT_HandleInSingularItem<CT_PointsAttributesNormal>              _in_normal_cloud;
     CT_HandleOutSingularItem<STL_3DGrid<int>>                        _outSTLGrid3D;
 
-    template< class DataT >
-    friend STL_3DGrid<DataT> operator+(STL_3DGrid<DataT>& leftGrid,const STL_3DGrid<DataT>& rightGrid );
-
-
-
     double _grid_resolution;
-
-
 };
 
 #endif // STL_STEP_Create_3D_Grid_H

@@ -280,9 +280,7 @@ public:
     }
 
     template< class DataT >
-    friend STL_3DGrid<DataT> operator+(STL_3DGrid<DataT>& leftGrid,const STL_3DGrid<DataT>& rightGrid );
-
-
+    friend STL_3DGrid<DataT> operator+(const STL_3DGrid<DataT>& leftGrid,const STL_3DGrid<DataT>& rightGrid );
 
 protected:
     // -------------------------------------------------------

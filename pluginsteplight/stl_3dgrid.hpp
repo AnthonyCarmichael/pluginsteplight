@@ -399,8 +399,14 @@ bool STL_3DGrid<DataT>::is_pixel_local_maxima( const Vec3i& pix, int nei_size ) 
 }
 
 template< class DataT >
-STL_3DGrid<DataT> operator+(STL_3DGrid<DataT>& leftGrid,const STL_3DGrid<DataT>& rightGrid )
+STL_3DGrid<DataT> operator+(const STL_3DGrid<DataT>& leftGrid,const STL_3DGrid<DataT>& rightGrid )
 {
+    if (leftGrid._dimx != rightGrid._dimx ||
+        leftGrid._dimy != rightGrid._dimy ||
+        leftGrid._dimz != rightGrid._dimz) {
+        throw std::invalid_argument("Les grilles doivent avoir la même taille pour être additionnées.");
+    }
+
     STL_3DGrid<DataT> rslt(leftGrid._bot[0],
                           leftGrid._bot[1],
                           leftGrid._bot[2],
@@ -411,8 +417,8 @@ STL_3DGrid<DataT> operator+(STL_3DGrid<DataT>& leftGrid,const STL_3DGrid<DataT>&
                           leftGrid._NAdata,
                           0);
 
-    std::transform(rslt._data.begin(), rslt._data.end(), leftGrid._data.begin(), leftGrid._data.begin(), std::plus<int>());
-    std::transform(rslt._data.begin(), rslt._data.end(), rightGrid._data.begin(), rightGrid._data.begin(), std::plus<int>());
+    std::transform(leftGrid._data.begin(), leftGrid._data.end(), rightGrid._data.begin(), rslt._data.begin(), std::plus<int>());
+    //std::transform(rslt._data.begin(), rslt._data.end(), rightGrid._data.begin(), rightGrid._data.begin(), std::plus<int>());
 
     return rslt;
 }
