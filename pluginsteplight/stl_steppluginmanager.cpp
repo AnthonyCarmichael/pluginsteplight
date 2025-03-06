@@ -1,6 +1,5 @@
 #include "stl_steppluginmanager.h"
-#include "step/st_stl_step_helloworld.h"
-#include "step/stl_step_create_3dgrid.h"
+#include "step/stl_stepcreate3dgrid.h"
 
 
 ST_STL_StepPluginManager::ST_STL_StepPluginManager() : CT_AbstractStepPlugin()
@@ -27,8 +26,7 @@ QString ST_STL_StepPluginManager::getPluginRISCitation() const
 
 bool ST_STL_StepPluginManager::loadGenericsStep()
 {
-    addNewPointsStep<ST_STL_Step_HelloWorld>(CT_StepsMenu::LP_Points);
-    addNewPointsStep<STL_STEP_Create_3D_Grid>(CT_StepsMenu::LP_Points);
+    addNewPointsStep<STL_STEPCreate3DGrid>(CT_StepsMenu::LP_Points);
     return true;
 }
 

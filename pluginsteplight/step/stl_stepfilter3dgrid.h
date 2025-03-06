@@ -1,5 +1,5 @@
-#ifndef STL_STEP_FILTER_3DGRID_H
-#define STL_STEP_FILTER_3DGRID_H
+#ifndef STL_STEPFILTER3DGRID_H
+#define STL_STEPFILTER3DGRID_H
 
 #include "stl_3dgrid.h"
 #include "ct_step/abstract/ct_abstractstep.h"
@@ -35,4 +35,4 @@ protected:
     double                                  _ratio_thresh;
 };
 
-#endif // STL_STEP_FILTER_3DGRID_H
+#endif // STL_STEPFILTER3DGRID_H

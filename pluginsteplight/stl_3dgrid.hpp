@@ -417,7 +417,7 @@ STL_3DGrid<DataT> operator+(const STL_3DGrid<DataT>& leftGrid,const STL_3DGrid<D
                           leftGrid._NAdata,
                           0);
 
-    std::transform(leftGrid._data.begin(), leftGrid._data.end(), rightGrid._data.begin(), rslt._data.begin(), std::plus<int>());
+    std::transform(leftGrid._data.begin(), leftGrid._data.end(), rightGrid._data.begin(), rslt._data.begin(), std::plus<DataT>());
     //std::transform(rslt._data.begin(), rslt._data.end(), rightGrid._data.begin(), rightGrid._data.begin(), std::plus<int>());
 
     return rslt;

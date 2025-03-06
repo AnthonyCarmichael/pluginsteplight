@@ -1,4 +1,4 @@
-#include "stl_step_create_3dgrid.h"
+#include "stl_stepcreate3dgrid.h"
 #include "ct_global/ct_context.h"
 #include "ct_itemdrawable/tools/gridtools/ct_grid3dwootraversalalgorithm.h"
 #include "loginterface.h"
@@ -8,30 +8,30 @@
 #include <thread>
 #include <future>
 
-STL_STEP_Create_3D_Grid::STL_STEP_Create_3D_Grid(): SuperClass()
+STL_STEPCreate3DGrid::STL_STEPCreate3DGrid(): SuperClass()
 {
     _grid_resolution = 0.2f;
 }
 
-QString STL_STEP_Create_3D_Grid::description() const
+QString STL_STEPCreate3DGrid::description() const
 {
     return tr("STL: 1 - Créer une grille 3D à partir d'un nuage de points");
 }
 
 // Step detailled description
-QString STL_STEP_Create_3D_Grid::getStepDetailledDescription() const
+QString STL_STEPCreate3DGrid::getStepDetailledDescription() const
 {
     return tr("Créer et remplir une grille 3D.");
 }
 
-CT_VirtualAbstractStep* STL_STEP_Create_3D_Grid::createNewInstance() const
+CT_VirtualAbstractStep* STL_STEPCreate3DGrid::createNewInstance() const
 {
-    return new STL_STEP_Create_3D_Grid();
+    return new STL_STEPCreate3DGrid();
 }
 
 //////////////////// PROTECTED METHODS //////////////////
 
-void STL_STEP_Create_3D_Grid::declareInputModels(CT_StepInModelStructureManager& manager)
+void STL_STEPCreate3DGrid::declareInputModels(CT_StepInModelStructureManager& manager)
 {
     manager.addResult(_inResult, tr("Scène(s)"));
     manager.setZeroOrMoreRootGroup(_inResult, _inZeroOrMoreRootGroup);
@@ -40,13 +40,13 @@ void STL_STEP_Create_3D_Grid::declareInputModels(CT_StepInModelStructureManager&
     manager.addItem(_inGroup, _in_normal_cloud, tr("Normal cloud"));
 }
 
-void STL_STEP_Create_3D_Grid::declareOutputModels(CT_StepOutModelStructureManager& manager)
+void STL_STEPCreate3DGrid::declareOutputModels(CT_StepOutModelStructureManager& manager)
 {
     manager.addResultCopy(_inResult);
     manager.addItem(_inGroup, _outSTLGrid3D, tr("Computed STL 3D Grid"));
 }
 
-void STL_STEP_Create_3D_Grid::fillPostInputConfigurationDialog(CT_StepConfigurableDialog* postInputConfigDialog)
+void STL_STEPCreate3DGrid::fillPostInputConfigurationDialog(CT_StepConfigurableDialog* postInputConfigDialog)
 {
     postInputConfigDialog->addDouble(tr("Spatial resolution"),
                                      tr("[m]"),
@@ -60,7 +60,7 @@ void STL_STEP_Create_3D_Grid::fillPostInputConfigurationDialog(CT_StepConfigurab
 
 }
 
-void STL_STEP_Create_3D_Grid::compute()
+void STL_STEPCreate3DGrid::compute()
 {
 
     using Vec3d                 = Eigen::Vector3d;
@@ -120,7 +120,7 @@ void STL_STEP_Create_3D_Grid::compute()
                 delete visitor;
                 return grid_3d;
             }));
-            //threads.emplace_back(&STL_STEP_Create_3D_Grid::multithreadCompute,pointsPerThread, i, i_point, n_points, inPointCloud, inNormalCloud, woo);
+            //threads.emplace_back(&STL_STEPCreate3DGrid::multithreadCompute,pointsPerThread, i, i_point, n_points, inPointCloud, inNormalCloud, woo);
         }
         STL_3DGrid<int>* grid_3d = nullptr;
         for (auto &t : futures) {
@@ -144,10 +144,10 @@ void STL_STEP_Create_3D_Grid::compute()
         */
 
         // delete visitor;
-        // grid_3d->computeMinMax();
+        grid_3d->computeMinMax();
 
-        // PS_LOG->addInfoMessage(LogInterface::error, tr("Min value %1").arg(grid_3d->dataMin()));
-        // PS_LOG->addInfoMessage(LogInterface::error, tr("Max value %1").arg(grid_3d->dataMax()));
+        PS_LOG->addInfoMessage(LogInterface::error, tr("Min value %1").arg(grid_3d->dataMin()));
+        PS_LOG->addInfoMessage(LogInterface::error, tr("Max value %1").arg(grid_3d->dataMax()));
 
         // -----------------------------------------------------------------------------------------------------------------
         // Add computed Hough space to the step's output(s)
@@ -157,7 +157,7 @@ void STL_STEP_Create_3D_Grid::compute()
     setProgress(100);
 }
 
-void STL_STEP_Create_3D_Grid::multithreadCompute(size_t pointsPerThread,const size_t threadNum,
+void STL_STEPCreate3DGrid::multithreadCompute(size_t pointsPerThread,const size_t threadNum,
                                                  const CT_AbstractItemDrawableWithPointCloud* inPointCloud,
                                                  const CT_PointsAttributesNormal* inNormalCloud,
                                                  CT_Grid3DWooTraversalAlgorithm& woo )

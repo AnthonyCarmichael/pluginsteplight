@@ -1,4 +1,4 @@
-#include "stl_step_filter_3dgrid.h"
+#include "stl_stepfilter3dgrid.h"
 #include <ct_log/ct_logmanager.h>
 
 STL_Step_Filter_3DGrid::STL_Step_Filter_3DGrid() : SuperClass()

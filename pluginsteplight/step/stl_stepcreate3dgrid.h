@@ -1,5 +1,5 @@
-#ifndef STL_STEP_CREATE_3DGRID_H
-#define STL_STEP_CREATE_3DGRID_H
+#ifndef STL_STEPCREATE3DGRID_H
+#define STL_STEPCREATE3DGRID_H
 
 #include "ct_itemdrawable/ct_grid3d.h"
 #include "ct_itemdrawable/tools/gridtools/ct_grid3dwootraversalalgorithm.h"
@@ -8,13 +8,13 @@
 #include "ct_itemdrawable/abstract/ct_abstractitemdrawablewithpointcloud.h"
 #include "stl_3dgrid.h"
 
-class STL_STEP_Create_3D_Grid : public CT_AbstractStep
+class STL_STEPCreate3DGrid : public CT_AbstractStep
 {
     Q_OBJECT
     using SuperClass = CT_AbstractStep;
 
 public:
-    STL_STEP_Create_3D_Grid();
+    STL_STEPCreate3DGrid();
     QString description() const override;
     QString getStepDetailledDescription() const;
     CT_VirtualAbstractStep* createNewInstance() const override;
@@ -40,4 +40,4 @@ protected:
     double _grid_resolution;
 };
 
-#endif // STL_STEP_Create_3D_Grid_H
+#endif // STL_STEPCREATE3DGRID_H
