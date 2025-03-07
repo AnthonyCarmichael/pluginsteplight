@@ -1,10 +1,10 @@
-#ifndef ST_STEPEXTRACTCURVESFROM3DGRID_H
-#define ST_STEPEXTRACTCURVESFROM3DGRID_H
+#ifndef ST_STEPEXTRACTCURVESFROMGRID3D_H
+#define ST_STEPEXTRACTCURVESFROMGRID3D_H
 
 #include "ct_itemdrawable/ct_circle.h"
 #include "ct_step/abstract/ct_abstractstep.h"
 
-class ST_StepExtractCurvesFrom3DGrid : public CT_AbstractStep
+class ST_StepExtractCurvesFromGrid3D : public CT_AbstractStep
 {
     Q_OBJECT
     using SuperClass = CT_AbstractStep;
@@ -19,7 +19,7 @@ class ST_StepExtractCurvesFrom3DGrid : public CT_AbstractStep
     //using Snake     = ST_OpenActiveContours<HoughSpaceValueType>;
     //using SnakePtr  = Snake*;
 public:
-    ST_StepExtractCurvesFrom3DGrid();
+    ST_StepExtractCurvesFromGrid3D();
 };
 
-#endif // ST_STEPEXTRACTCURVESFROM3DGRID_H
+#endif // ST_STEPEXTRACTCURVESFROMGRID3D_H

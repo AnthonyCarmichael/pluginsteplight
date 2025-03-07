@@ -1,5 +1,5 @@
-#ifndef STL_3DGRID_H
-#define STL_3DGRID_H
+#ifndef STL_GRID3D_H
+#define STL_GRID3D_H
 
 #include "ct_itemdrawable/ct_grid3d.h"
 #include "ct_itemdrawable/ct_pointsattributesnormal.h"
@@ -7,7 +7,7 @@
 #include "ct_step/abstract/ct_abstractstep.h"
 
 template< class DataT >
-class STL_3DGrid : public CT_Grid3D<DataT>
+class STL_Grid3D : public CT_Grid3D<DataT>
 {
 
     using SuperClass = CT_Grid3D<DataT>;
@@ -28,8 +28,8 @@ public:
       * \brief Default constructor
       *  Each attribute will be set to 0, nullptr or will be cleared
       */
-    STL_3DGrid();
-    STL_3DGrid(const STL_3DGrid& otherGrid);
+    STL_Grid3D();
+    STL_Grid3D(const STL_Grid3D& otherGrid);
 
     /*!
      * \brief Initialisation constructor
@@ -48,7 +48,7 @@ public:
      * \param na Value used to code NA
      * \param initValue Initialisation value for grid cells
      */
-    STL_3DGrid(double xmin,
+    STL_Grid3D(double xmin,
                double ymin,
                double zmin,
                size_t dimx,
@@ -77,7 +77,7 @@ public:
      * \param initValue Initialisation value for grid cells
      * \param coordConstructor Not used, only to ensure constructor different signatures
      */
-    STL_3DGrid(double xmin,
+    STL_Grid3D(double xmin,
                double ymin,
                double zmin,
                double xmax,
@@ -87,7 +87,7 @@ public:
                DataT na,
                DataT initValue);
 
-    static STL_3DGrid<DataT>* createGrid3DFromXYZCoords(double xmin,
+    static STL_Grid3D<DataT>* createGrid3DFromXYZCoords(double xmin,
                                                                 double ymin,
                                                                 double zmin,
                                                                 double xmax,
@@ -101,15 +101,15 @@ public:
     /*!
      * \brief Destructor
      */
-    ~STL_3DGrid() override;
+    ~STL_Grid3D() override;
 
     inline Vec3d getResolutionsGrid() const { return _res; }
 
 
-    STL_3DGrid<DataT>* get_filtered_grid_using_fast_filter(double ratio_thresh,
+    STL_Grid3D<DataT>* get_filtered_grid_using_fast_filter(double ratio_thresh,
                                                             CT_AbstractStep* step_ptr = nullptr) const;
 
-    STL_3DGrid<DataT>* get_filtered_grid_using_fixed_threshold(DataT fixed_threshold,
+    STL_Grid3D<DataT>* get_filtered_grid_using_fixed_threshold(DataT fixed_threshold,
                                                                 CT_AbstractStep* step_ptr = nullptr) const;
 
 
@@ -280,7 +280,7 @@ public:
     }
 
     template< class DataT >
-    friend STL_3DGrid<DataT> operator+(const STL_3DGrid<DataT>& leftGrid,const STL_3DGrid<DataT>& rightGrid );
+    friend STL_Grid3D<DataT> operator+(const STL_Grid3D<DataT>& leftGrid,const STL_Grid3D<DataT>& rightGrid );
 
 protected:
     // -------------------------------------------------------
@@ -305,6 +305,6 @@ protected:
     NormalCloudConstPtr _normal_cloud_const_ptr;
 };
 
-#include "stl_3dgrid.hpp"
+#include "stl_grid3d.hpp"
 
-#endif // STL_3DGRID_H
+#endif // STL_GRID3D_H

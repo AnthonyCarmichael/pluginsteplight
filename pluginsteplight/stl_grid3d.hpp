@@ -1,14 +1,14 @@
-#ifndef STL_3DGRID_HPP
-#define STL_3DGRID_HPP
+#ifndef STL_GRID3D_HPP
+#define STL_GRID3D_HPP
 
 
-#include "stl_3dgrid.h"
+#include "stl_grid3d.h"
 #include "opencv2/core/mat.hpp"
 #include "ct_log/ct_logmanager.h"
  #include <numeric>
 
 template< class DataT >
-STL_3DGrid<DataT>::STL_3DGrid() :
+STL_Grid3D<DataT>::STL_Grid3D() :
     SuperClass(),
     _point_cloud_const_ptr( nullptr ),
     _normal_cloud_const_ptr( nullptr )
@@ -16,7 +16,7 @@ STL_3DGrid<DataT>::STL_3DGrid() :
 }
 
 template< class DataT >
-STL_3DGrid<DataT>::STL_3DGrid(const STL_3DGrid<DataT>& other) :
+STL_Grid3D<DataT>::STL_Grid3D(const STL_Grid3D<DataT>& other) :
     SuperClass( other ),
     _point_cloud_const_ptr( other._point_cloud_const_ptr ),
     _normal_cloud_const_ptr( other._normal_cloud_const_ptr )
@@ -24,7 +24,7 @@ STL_3DGrid<DataT>::STL_3DGrid(const STL_3DGrid<DataT>& other) :
 }
 
 template< class DataT >
-STL_3DGrid<DataT>::STL_3DGrid(double xmin,
+STL_Grid3D<DataT>::STL_Grid3D(double xmin,
                               double ymin,
                               double zmin,
                               size_t dimx,
@@ -43,7 +43,7 @@ STL_3DGrid<DataT>::STL_3DGrid(double xmin,
 }
 
 template< class DataT >
-STL_3DGrid<DataT>::STL_3DGrid(double xmin,
+STL_Grid3D<DataT>::STL_Grid3D(double xmin,
                               double ymin,
                               double zmin,
                               double xmax,
@@ -62,11 +62,11 @@ STL_3DGrid<DataT>::STL_3DGrid(double xmin,
 }
 
 template< class DataT >
-STL_3DGrid<DataT>::~STL_3DGrid()
+STL_Grid3D<DataT>::~STL_Grid3D()
 {}
 
 template< typename DataT>
-STL_3DGrid<DataT>* STL_3DGrid<DataT>::createGrid3DFromXYZCoords(double xmin,
+STL_Grid3D<DataT>* STL_Grid3D<DataT>::createGrid3DFromXYZCoords(double xmin,
                                                               double ymin,
                                                               double zmin,
                                                               double xmax,
@@ -101,17 +101,17 @@ STL_3DGrid<DataT>* STL_3DGrid<DataT>::createGrid3DFromXYZCoords(double xmin,
     }
 
 
-    return new STL_3DGrid<DataT>(xmin, ymin, zmin, dimx, dimy, dimz, resolution, na, initValue);
+    return new STL_Grid3D<DataT>(xmin, ymin, zmin, dimx, dimy, dimz, resolution, na, initValue);
 }
 
 
 
 template< class DataT >
-STL_3DGrid<DataT>* STL_3DGrid<DataT>::get_filtered_grid_using_fast_filter(double ratio_thresh,
+STL_Grid3D<DataT>* STL_Grid3D<DataT>::get_filtered_grid_using_fast_filter(double ratio_thresh,
                                                                               CT_AbstractStep* step_ptr) const
 {
 
-    STL_3DGrid<DataT>* filtered_grid  = new STL_3DGrid<DataT>( *this );
+    STL_Grid3D<DataT>* filtered_grid  = new STL_Grid3D<DataT>( *this );
     /*
     STL_Grid3DBeamVisitor*  filter_visitor =  new STL_Grid3DBeamVisitor(this);
     QList<STL_Grid3DBeamVisitor<DataT>*> filter_visitors_list;
@@ -209,9 +209,9 @@ STL_3DGrid<DataT>* STL_3DGrid<DataT>::get_filtered_grid_using_fast_filter(double
 
 
 template<class DataT>
-STL_3DGrid<DataT>* STL_3DGrid<DataT>::get_filtered_grid_using_fixed_threshold(DataT fixed_threshold, CT_AbstractStep *step_ptr) const
+STL_Grid3D<DataT>* STL_Grid3D<DataT>::get_filtered_grid_using_fixed_threshold(DataT fixed_threshold, CT_AbstractStep *step_ptr) const
 {
-    STL_3DGrid<DataT>* filtered_grid = new STL_3DGrid<DataT>( *this );
+    STL_Grid3D<DataT>* filtered_grid = new STL_Grid3D<DataT>( *this );
 
     cv::SparseMatConstIterator_<DataT> pixel_it = filtered_grid->_data.begin();
     cv::SparseMatConstIterator_<DataT> pixel_it_end = filtered_grid->_data.end();
@@ -235,7 +235,7 @@ STL_3DGrid<DataT>* STL_3DGrid<DataT>::get_filtered_grid_using_fixed_threshold(Da
 
 
 template< class DataT >
-void STL_3DGrid<DataT>::get_local_maximas(int nei_size,
+void STL_Grid3D<DataT>::get_local_maximas(int nei_size,
                                              std::vector<Vec3i>& out_local_maximas,
                                              bool sort_descending_order) const
 {
@@ -248,7 +248,7 @@ void STL_3DGrid<DataT>::get_local_maximas(int nei_size,
 }
 
 template< class DataT >
-void STL_3DGrid<DataT>::get_local_maximas_within_height_range(float zmin, float zmax, int nei_size,
+void STL_Grid3D<DataT>::get_local_maximas_within_height_range(float zmin, float zmax, int nei_size,
                                                                  std::vector<Vec3i>& out_local_maximas,
                                                                  bool sort_descending_order) const
 {
@@ -277,7 +277,7 @@ void STL_3DGrid<DataT>::get_local_maximas_within_height_range(float zmin, float 
 }
 
 template< class DataT >
-void STL_3DGrid<DataT>::get_local_maximas_in_bbox(const Vec3i& bot, const Vec3i& top, int nei_size,
+void STL_Grid3D<DataT>::get_local_maximas_in_bbox(const Vec3i& bot, const Vec3i& top, int nei_size,
                                                      std::vector<Vec3i>& out_local_maximas,
                                                      bool sort_descending_order) const
 {
@@ -340,12 +340,12 @@ void STL_3DGrid<DataT>::get_local_maximas_in_bbox(const Vec3i& bot, const Vec3i&
 }
 
 template< class DataT >
-DataT* STL_3DGrid<DataT>::get_data() {
+DataT* STL_Grid3D<DataT>::get_data() {
     return _data.data();
 }
 
 template< class DataT >
-bool STL_3DGrid<DataT>::is_pixel_local_maxima( const Vec3i& pix, int nei_size ) const
+bool STL_Grid3D<DataT>::is_pixel_local_maxima( const Vec3i& pix, int nei_size ) const
 {
     DataT curr_value = value( pix );
     Vec3i nei;
@@ -399,7 +399,7 @@ bool STL_3DGrid<DataT>::is_pixel_local_maxima( const Vec3i& pix, int nei_size ) 
 }
 
 template< class DataT >
-STL_3DGrid<DataT> operator+(const STL_3DGrid<DataT>& leftGrid,const STL_3DGrid<DataT>& rightGrid )
+STL_Grid3D<DataT> operator+(const STL_Grid3D<DataT>& leftGrid,const STL_Grid3D<DataT>& rightGrid )
 {
     if (leftGrid._dimx != rightGrid._dimx ||
         leftGrid._dimy != rightGrid._dimy ||
@@ -407,7 +407,7 @@ STL_3DGrid<DataT> operator+(const STL_3DGrid<DataT>& leftGrid,const STL_3DGrid<D
         throw std::invalid_argument("Les grilles doivent avoir la même taille pour être additionnées.");
     }
 
-    STL_3DGrid<DataT> rslt(leftGrid._bot[0],
+    STL_Grid3D<DataT> rslt(leftGrid._bot[0],
                           leftGrid._bot[1],
                           leftGrid._bot[2],
                           static_cast<size_t>(leftGrid._dimx),
@@ -423,4 +423,4 @@ STL_3DGrid<DataT> operator+(const STL_3DGrid<DataT>& leftGrid,const STL_3DGrid<D
     return rslt;
 }
 
-#endif // STL_3DGRID_HPP
+#endif // STL_GRID3D_HPP

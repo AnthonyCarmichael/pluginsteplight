@@ -13,21 +13,21 @@ QMAKE_CXXFLAGS += -openmp
 
 HEADERS += \
     $$CT_PREFIX_LIB/ctlibplugin/pluginentryinterface.h\
-    step/st_stepextractcurvesfrom3dgrid.h \
-    step/stl_stepcreate3dgrid.h \
-    step/stl_stepfilter3dgrid.h \
-    stl_3dgrid.h \
-    stl_3dgrid.hpp \
+    step/st_stepextractcurvesfromgrid3d.h \
+    step/stl_stepcreategrid3d.h \
+    step/stl_stepfiltergrid3d.h \
+    stl_grid3d.h \
+    stl_grid3d.hpp \
     stl_grid3dbeamvisitor.h \
     stl_pluginentry.h \
     stl_steppluginmanager.h
 
 
 SOURCES += \
-    step/st_stepextractcurvesfrom3dgrid.cpp \
-    step/stl_stepcreate3dgrid.cpp \
-    step/stl_stepfilter3dgrid.cpp \
-    stl_3dgrid.cpp \
+    step/st_stepextractcurvesfromgrid3d.cpp \
+    step/stl_stepcreategrid3d.cpp \
+    step/stl_stepfiltergrid3d.cpp \
+    stl_grid3d.cpp \
     stl_grid3dbeamvisitor.cpp \
     stl_pluginentry.cpp \
     stl_steppluginmanager.cpp

@@ -1,37 +1,37 @@
-#include "stl_stepcreate3dgrid.h"
+#include "stl_stepcreategrid3d.h"
 #include "ct_global/ct_context.h"
 #include "ct_itemdrawable/tools/gridtools/ct_grid3dwootraversalalgorithm.h"
 #include "loginterface.h"
-#include "stl_3dgrid.h"
+#include "stl_grid3d.h"
 #include "stl_grid3dbeamvisitor.h"
 #include <omp.h>
 #include <thread>
 #include <future>
 
-STL_STEPCreate3DGrid::STL_STEPCreate3DGrid(): SuperClass()
+STL_STEPCreateGrid3D::STL_STEPCreateGrid3D(): SuperClass()
 {
     _grid_resolution = 0.2f;
 }
 
-QString STL_STEPCreate3DGrid::description() const
+QString STL_STEPCreateGrid3D::description() const
 {
     return tr("STL: 1 - Créer une grille 3D à partir d'un nuage de points");
 }
 
 // Step detailled description
-QString STL_STEPCreate3DGrid::getStepDetailledDescription() const
+QString STL_STEPCreateGrid3D::getStepDetailledDescription() const
 {
     return tr("Créer et remplir une grille 3D.");
 }
 
-CT_VirtualAbstractStep* STL_STEPCreate3DGrid::createNewInstance() const
+CT_VirtualAbstractStep* STL_STEPCreateGrid3D::createNewInstance() const
 {
-    return new STL_STEPCreate3DGrid();
+    return new STL_STEPCreateGrid3D();
 }
 
 //////////////////// PROTECTED METHODS //////////////////
 
-void STL_STEPCreate3DGrid::declareInputModels(CT_StepInModelStructureManager& manager)
+void STL_STEPCreateGrid3D::declareInputModels(CT_StepInModelStructureManager& manager)
 {
     manager.addResult(_inResult, tr("Scène(s)"));
     manager.setZeroOrMoreRootGroup(_inResult, _inZeroOrMoreRootGroup);
@@ -40,13 +40,13 @@ void STL_STEPCreate3DGrid::declareInputModels(CT_StepInModelStructureManager& ma
     manager.addItem(_inGroup, _in_normal_cloud, tr("Normal cloud"));
 }
 
-void STL_STEPCreate3DGrid::declareOutputModels(CT_StepOutModelStructureManager& manager)
+void STL_STEPCreateGrid3D::declareOutputModels(CT_StepOutModelStructureManager& manager)
 {
     manager.addResultCopy(_inResult);
     manager.addItem(_inGroup, _outSTLGrid3D, tr("Computed STL 3D Grid"));
 }
 
-void STL_STEPCreate3DGrid::fillPostInputConfigurationDialog(CT_StepConfigurableDialog* postInputConfigDialog)
+void STL_STEPCreateGrid3D::fillPostInputConfigurationDialog(CT_StepConfigurableDialog* postInputConfigDialog)
 {
     postInputConfigDialog->addDouble(tr("Spatial resolution"),
                                      tr("[m]"),
@@ -60,7 +60,7 @@ void STL_STEPCreate3DGrid::fillPostInputConfigurationDialog(CT_StepConfigurableD
 
 }
 
-void STL_STEPCreate3DGrid::compute()
+void STL_STEPCreateGrid3D::compute()
 {
 
     using Vec3d                 = Eigen::Vector3d;
@@ -102,10 +102,10 @@ void STL_STEPCreate3DGrid::compute()
         const size_t pointsPerThread = n_points / numThreads;
 
         // Vecteur de threads
-        std::vector<std::future<STL_3DGrid<int>*>> futures;
+        std::vector<std::future<STL_Grid3D<int>*>> futures;
         for (unsigned int i = 0; i < numThreads; ++i) {
-            futures.push_back(std::async(std::launch::async, [this, pointsPerThread, i, inPointCloud, inNormalCloud, bbox_bot, bbox_top]() mutable -> STL_3DGrid<int>* {
-                STL_3DGrid<int>* grid_3d = STL_3DGrid<int>::createGrid3DFromXYZCoords(bbox_bot[0],bbox_bot[1],bbox_bot[2],
+            futures.push_back(std::async(std::launch::async, [this, pointsPerThread, i, inPointCloud, inNormalCloud, bbox_bot, bbox_top]() mutable -> STL_Grid3D<int>* {
+                STL_Grid3D<int>* grid_3d = STL_Grid3D<int>::createGrid3DFromXYZCoords(bbox_bot[0],bbox_bot[1],bbox_bot[2],
                                                                                       bbox_top[0],bbox_top[1],bbox_top[2],
                                                                                       _grid_resolution,
                                                                                       std::numeric_limits<int>::max(),
@@ -120,16 +120,16 @@ void STL_STEPCreate3DGrid::compute()
                 delete visitor;
                 return grid_3d;
             }));
-            //threads.emplace_back(&STL_STEPCreate3DGrid::multithreadCompute,pointsPerThread, i, i_point, n_points, inPointCloud, inNormalCloud, woo);
+            //threads.emplace_back(&STL_STEPCreateGrid3D::multithreadCompute,pointsPerThread, i, i_point, n_points, inPointCloud, inNormalCloud, woo);
         }
-        STL_3DGrid<int>* grid_3d = nullptr;
+        STL_Grid3D<int>* grid_3d = nullptr;
         for (auto &t : futures) {
-            STL_3DGrid<int>* grid = t.get();
+            STL_Grid3D<int>* grid = t.get();
 
 
             if (grid_3d) {
-                STL_3DGrid<int>* tmp = grid_3d;
-                grid_3d = new STL_3DGrid<int>(*grid_3d + *grid);
+                STL_Grid3D<int>* tmp = grid_3d;
+                grid_3d = new STL_Grid3D<int>(*grid_3d + *grid);
                 delete tmp;
             } else {
                 grid_3d = grid;
@@ -157,7 +157,7 @@ void STL_STEPCreate3DGrid::compute()
     setProgress(100);
 }
 
-void STL_STEPCreate3DGrid::multithreadCompute(size_t pointsPerThread,const size_t threadNum,
+void STL_STEPCreateGrid3D::multithreadCompute(size_t pointsPerThread,const size_t threadNum,
                                                  const CT_AbstractItemDrawableWithPointCloud* inPointCloud,
                                                  const CT_PointsAttributesNormal* inNormalCloud,
                                                  CT_Grid3DWooTraversalAlgorithm& woo )
