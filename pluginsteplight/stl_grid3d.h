@@ -279,7 +279,6 @@ public:
         }
     }
 
-    template< class DataT >
     friend STL_Grid3D<DataT> operator+(const STL_Grid3D<DataT>& leftGrid,const STL_Grid3D<DataT>& rightGrid );
 
 

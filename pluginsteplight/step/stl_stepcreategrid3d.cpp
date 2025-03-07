@@ -178,8 +178,8 @@ void STL_STEPCreateGrid3D::compute()
             // }
 
             if (grid_3d) {
-                *grid_3d += *grid;  // Utilise l'opérateur += pour éviter de créer un nouvel objet
-                delete grid;         // Supprime l'ancienne grille fusionnée
+                *grid_3d += *grid;
+                delete grid;
             } else {
                 grid_3d = grid;
             }
