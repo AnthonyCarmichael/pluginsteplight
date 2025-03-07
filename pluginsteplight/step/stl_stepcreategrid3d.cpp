@@ -131,12 +131,6 @@ void STL_STEPCreateGrid3D::compute()
                     //     return;
                     // }
 
-                    if (isStopped())
-                    {
-                        return nullptr;
-                    }
-
-
                     itPoint.next();
                     CT_Point currentPoint = itPoint.currentPoint();
                     const CT_Normal& currentCTNormal    = inNormalCloud->constNormalAt(i);
@@ -158,11 +152,6 @@ void STL_STEPCreateGrid3D::compute()
                 delete visitor;
                 return grid_3d;
             }));
-        }
-
-        if (isStopped())
-        {
-            return;
         }
 
         STL_Grid3D<int>* grid_3d = nullptr;
