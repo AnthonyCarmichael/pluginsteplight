@@ -95,14 +95,14 @@ void STL_STEPCreateGrid3D::compute()
         size_t n_points = inPointCloud->pointCloudIndex()->size();
         CT_PointIterator itPoint(inPointCloud->pointCloudIndex());
 
-        //size_t i_point = 0;
+        std::atomic<size_t> i_point = 0;
         const unsigned int numThreads = std::thread::hardware_concurrency();
         const size_t pointsPerThread = n_points / numThreads;
 
         // Vecteur de threads
         std::vector<std::future<STL_Grid3D<int>*>> futures;
         for (unsigned int i = 0; i < numThreads; ++i) {
-            futures.push_back(std::async(std::launch::async, [this, pointsPerThread, i, inPointCloud, inNormalCloud, bbox_bot, bbox_top]() mutable -> STL_Grid3D<int>* {
+            futures.push_back(std::async(std::launch::async, [this,&i_point,n_points, pointsPerThread, i, inPointCloud, inNormalCloud, bbox_bot, bbox_top]() mutable -> STL_Grid3D<int>* {
                 STL_Grid3D<int>* grid_3d = STL_Grid3D<int>::createGrid3DFromXYZCoords(bbox_bot[0],bbox_bot[1],bbox_bot[2],
                                                                                       bbox_top[0],bbox_top[1],bbox_top[2],
                                                                                       _grid_resolution,
@@ -119,11 +119,11 @@ void STL_STEPCreateGrid3D::compute()
                 itPoint.jump(beginIndex);
                 for(size_t i = beginIndex; i < (beginIndex + pointsPerThread); i++)
                 {
-                    // Trouver une façon de gèrer la progress bar
-                    // if( i_point % 100 == 0 )
-                    // {
-                    //     setProgress( static_cast<float>(i_point) * 100.0f / static_cast<float>(n_points) );
-                    // }
+                    // Gestion de la bar de progress multithread safe
+                    if( i_point.fetch_add(1) % 100 == 0 )
+                    {
+                        setProgress(static_cast<float>(i_point) * 100.0f / static_cast<float>(n_points));
+                    }
 
                     // Trouver une façon d'arrêter les threads et d'arrêter le compute
                     // if (isStopped())
