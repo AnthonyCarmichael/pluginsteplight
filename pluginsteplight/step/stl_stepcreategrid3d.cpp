@@ -62,7 +62,6 @@ void STL_STEPCreateGrid3D::fillPostInputConfigurationDialog(CT_StepConfigurableD
 
 void STL_STEPCreateGrid3D::compute()
 {
-
     using Vec3d                 = Eigen::Vector3d;
     using PointCloudConst       = const CT_AbstractItemDrawableWithPointCloud;
     using PointCloudConstPtr    = PointCloudConst*;
@@ -90,7 +89,6 @@ void STL_STEPCreateGrid3D::compute()
 
         inPointCloud->boundingBox(bbox_bot, bbox_top);
 
-
         // -----------------------------------------------------------------------------------------------------------------
         // Loop through all points and normals of the input point cloud and start raytracing inside Hough space
 
@@ -115,35 +113,78 @@ void STL_STEPCreateGrid3D::compute()
                 visitorArr.push_back(visitor);
                 CT_Grid3DWooTraversalAlgorithm woo(grid_3d,true,visitorArr);
 
-                multithreadCompute(pointsPerThread, i, inPointCloud, inNormalCloud, woo);
+                // multithreadCompute(pointsPerThread, i, inPointCloud, inNormalCloud, woo);
+                size_t  beginIndex = i * pointsPerThread;
+                CT_PointIterator itPoint(inPointCloud->pointCloudIndex());
+                itPoint.jump(beginIndex);
+                for(size_t i = beginIndex; i < (beginIndex + pointsPerThread); i++)
+                {
+                    // Trouver une façon de gèrer la progress bar
+                    // if( i_point % 100 == 0 )
+                    // {
+                    //     setProgress( static_cast<float>(i_point) * 100.0f / static_cast<float>(n_points) );
+                    // }
+
+                    // Trouver une façon d'arrêter les threads et d'arrêter le compute
+                    // if (isStopped())
+                    // {
+                    //     return;
+                    // }
+
+                    if (isStopped())
+                    {
+                        return nullptr;
+                    }
+
+
+                    itPoint.next();
+                    CT_Point currentPoint = itPoint.currentPoint();
+                    const CT_Normal& currentCTNormal    = inNormalCloud->constNormalAt(i);
+                    Eigen::Vector3d  currentNormal      = currentCTNormal.head(3).cast<double>();
+
+                    float normalLenght = currentNormal.norm();
+
+                    if( normalLenght != 0.0 )
+                    {
+                        currentNormal /= normalLenght;
+                        CT_Beam beam_01(currentPoint, currentNormal);
+                        CT_Beam beam_02(currentPoint, -currentNormal);
+
+                        woo.compute(beam_01);
+                        woo.compute(beam_02);
+                    }
+                }
 
                 delete visitor;
                 return grid_3d;
             }));
-            //threads.emplace_back(&STL_STEPCreateGrid3D::multithreadCompute,pointsPerThread, i, i_point, n_points, inPointCloud, inNormalCloud, woo);
         }
+
+        if (isStopped())
+        {
+            return;
+        }
+
         STL_Grid3D<int>* grid_3d = nullptr;
         for (auto &t : futures) {
             STL_Grid3D<int>* grid = t.get();
 
+            // if (grid_3d) {
+            //     STL_Grid3D<int>* tmp = grid_3d;
+            //     grid_3d = new STL_Grid3D<int>(*grid_3d + *grid);
+            //     delete tmp;
+            // } else {
+            //     grid_3d = grid;
+            // }
 
             if (grid_3d) {
-                STL_Grid3D<int>* tmp = grid_3d;
-                grid_3d = new STL_Grid3D<int>(*grid_3d + *grid);
-                delete tmp;
+                *grid_3d += *grid;  // Utilise l'opérateur += pour éviter de créer un nouvel objet
+                delete grid;         // Supprime l'ancienne grille fusionnée
             } else {
                 grid_3d = grid;
             }
-
         }
 
-        /*
-        for (size_t threadNum = 0; threadNum < numThreads; ++threadNum){
-         std::thread t1(this::multithreadCompute, pointsPerThread, threadNum, i_point, n_points, inPointCloud, inNormalCloud, woo);
-        }
-        */
-
-        // delete visitor;
         grid_3d->computeMinMax();
 
         PS_LOG->addInfoMessage(LogInterface::error, tr("Min value %1").arg(grid_3d->dataMin()));
@@ -178,16 +219,10 @@ void STL_STEPCreateGrid3D::multithreadCompute(size_t pointsPerThread,const size_
         //     return;
         // }
 
-        // Get le point:
-        //CT_Point pts = PS_REPOSITORY->inPointCloud->pointCloudIndex()->indexAt(beginIndex);
-        //size_t indexCurPoint = inPointCloud->pointCloudIndex()->indexAt(beginIndex);
-
-
         itPoint.next();
         CT_Point currentPoint = itPoint.currentPoint();
         const CT_Normal& currentCTNormal    = inNormalCloud->constNormalAt(i);
         Eigen::Vector3d  currentNormal      = currentCTNormal.head(3).cast<double>();
-
 
         float normalLenght = currentNormal.norm();
 

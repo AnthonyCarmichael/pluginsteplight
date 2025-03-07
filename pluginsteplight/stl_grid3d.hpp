@@ -423,4 +423,17 @@ STL_Grid3D<DataT> operator+(const STL_Grid3D<DataT>& leftGrid,const STL_Grid3D<D
     return rslt;
 }
 
+
+template< class DataT >
+STL_Grid3D<DataT>& STL_Grid3D<DataT>::operator+=(const STL_Grid3D<DataT>& other)
+{
+    if (_dimx != other._dimx || _dimy != other._dimy || _dimz != other._dimz) {
+        throw std::invalid_argument("Les grilles doivent avoir la même taille pour être additionnées.");
+    }
+
+    std::transform(_data.begin(), _data.end(), other._data.begin(), _data.begin(), std::plus<DataT>());
+
+    return *this;
+}
+
 #endif // STL_GRID3D_HPP
