@@ -95,11 +95,12 @@ void STL_STEPCreateGrid3D::compute()
         size_t n_points = inPointCloud->pointCloudIndex()->size();
         CT_PointIterator itPoint(inPointCloud->pointCloudIndex());
 
+        // Multithreading
         std::atomic<size_t> i_point = 0;
         const unsigned int numThreads = std::thread::hardware_concurrency();
         const size_t pointsPerThread = n_points / numThreads;
 
-        // Vecteur de threads
+        // Vecteur de résultat d'opération asynch. Permets de récupérer les grilles générées par chacun des threads.
         std::vector<std::future<STL_Grid3D<int>*>> futures;
         for (unsigned int i = 0; i < numThreads; ++i) {
             futures.push_back(std::async(std::launch::async, [this,&i_point,n_points, pointsPerThread, i, inPointCloud, inNormalCloud, bbox_bot, bbox_top]() mutable -> STL_Grid3D<int>* {
@@ -113,7 +114,6 @@ void STL_STEPCreateGrid3D::compute()
                 visitorArr.push_back(visitor);
                 CT_Grid3DWooTraversalAlgorithm woo(grid_3d,true,visitorArr);
 
-                // multithreadCompute(pointsPerThread, i, inPointCloud, inNormalCloud, woo);
                 size_t  beginIndex = i * pointsPerThread;
                 CT_PointIterator itPoint(inPointCloud->pointCloudIndex());
                 itPoint.jump(beginIndex);
@@ -158,14 +158,6 @@ void STL_STEPCreateGrid3D::compute()
         for (auto &t : futures) {
             STL_Grid3D<int>* grid = t.get();
 
-            // if (grid_3d) {
-            //     STL_Grid3D<int>* tmp = grid_3d;
-            //     grid_3d = new STL_Grid3D<int>(*grid_3d + *grid);
-            //     delete tmp;
-            // } else {
-            //     grid_3d = grid;
-            // }
-
             if (grid_3d) {
                 *grid_3d += *grid;
                 delete grid;
@@ -185,57 +177,4 @@ void STL_STEPCreateGrid3D::compute()
     }
 
     setProgress(100);
-}
-
-void STL_STEPCreateGrid3D::multithreadCompute(size_t pointsPerThread,const size_t threadNum,
-                                                 const CT_AbstractItemDrawableWithPointCloud* inPointCloud,
-                                                 const CT_PointsAttributesNormal* inNormalCloud,
-                                                 CT_Grid3DWooTraversalAlgorithm& woo )
-{
-    // trouver la facon d'acceder a un point via un cloud
-    size_t  beginIndex = threadNum * pointsPerThread;
-    CT_PointIterator itPoint(inPointCloud->pointCloudIndex());
-    itPoint.jump(beginIndex);
-    for(size_t i = beginIndex; i < (beginIndex + pointsPerThread); i++)
-    {
-        // if( i_point % 100 == 0 )
-        // {
-        //     setProgress( static_cast<float>(i_point) * 100.0f / static_cast<float>(n_points) );
-        // }
-
-        // if (isStopped())
-        // {
-        //     return;
-        // }
-
-        itPoint.next();
-        CT_Point currentPoint = itPoint.currentPoint();
-        const CT_Normal& currentCTNormal    = inNormalCloud->constNormalAt(i);
-        Eigen::Vector3d  currentNormal      = currentCTNormal.head(3).cast<double>();
-
-        float normalLenght = currentNormal.norm();
-
-        if( normalLenght != 0.0 )
-        {
-            /*
-            currentNormal /= normalLenght;
-            CT_Beam beam_01( currentPoint, currentNormal );
-            CT_Beam beam_02( currentPoint, -currentNormal );
-
-            auto wooCompute = std::bind(&CT_Grid3DWooTraversalAlgorithm::compute, woo);
-
-            std::thread t1([&]() { woo.compute(beam_01); });
-            std::thread t2([&]() { woo.compute(beam_02); });
-
-            t1.join();
-            t2.join();
-            */
-            currentNormal /= normalLenght;
-            CT_Beam beam_01(currentPoint, currentNormal);
-            CT_Beam beam_02(currentPoint, -currentNormal);
-
-            woo.compute(beam_01);
-            woo.compute(beam_02);
-        }
-    }
 }

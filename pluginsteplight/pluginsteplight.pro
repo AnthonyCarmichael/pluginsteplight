@@ -16,6 +16,7 @@ HEADERS += \
     step/st_stepextractcurvesfromgrid3d.h \
     step/stl_stepcreategrid3d.h \
     step/stl_stepfiltergrid3d.h \
+    step/stl_stepfiltergrid3dbyvalue.h \
     stl_grid3d.h \
     stl_grid3d.hpp \
     stl_grid3dbeamvisitor.h \
@@ -27,6 +28,7 @@ SOURCES += \
     step/st_stepextractcurvesfromgrid3d.cpp \
     step/stl_stepcreategrid3d.cpp \
     step/stl_stepfiltergrid3d.cpp \
+    step/stl_stepfiltergrid3dbyvalue.cpp \
     stl_grid3d.cpp \
     stl_grid3dbeamvisitor.cpp \
     stl_pluginentry.cpp \

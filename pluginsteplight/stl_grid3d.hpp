@@ -105,134 +105,59 @@ STL_Grid3D<DataT>* STL_Grid3D<DataT>::createGrid3DFromXYZCoords(double xmin,
 }
 
 
-
-template< class DataT >
-STL_Grid3D<DataT>* STL_Grid3D<DataT>::get_filtered_grid_using_fast_filter(double ratio_thresh,
-                                                                              CT_AbstractStep* step_ptr) const
+template<class DataT>
+STL_Grid3D<DataT>* STL_Grid3D<DataT>::get_filtered_grid_using_ratio_thresh(double ratio_thresh, CT_AbstractStep *step_ptr) const
 {
 
-    STL_Grid3D<DataT>* filtered_grid  = new STL_Grid3D<DataT>( *this );
-    /*
-    STL_Grid3DBeamVisitor*  filter_visitor =  new STL_Grid3DBeamVisitor(this);
-    QList<STL_Grid3DBeamVisitor<DataT>*> filter_visitors_list;
+    STL_Grid3D<DataT>* filtered_grid = new STL_Grid3D<DataT>(*this);
 
-    filter_visitors_list.push_back( filter_visitor );
-
-    CT_Grid3DWooTraversalAlgorithm woo(filtered_grid,true,filter_visitors_list);
-
-    // On declare tout ce qui est necessaire pour faire le raytracing 4d
-    ST_VisitorGrid4DFastFilter<DataT>* filter_visitor = new ST_VisitorGrid4DFastFilter<DataT>( this );
-    QList< ST_AbstractVisitorGrid4D<DataT>* > filter_visitors_list;
-    filter_visitors_list.push_back( filter_visitor );
-
-    ST_VisitorGrid4DSetValue<DataT>* set_value_visitor = new ST_VisitorGrid4DSetValue<DataT>(filtered_grid , static_cast<DataT>(0) );
-    QList< ST_AbstractVisitorGrid4D<DataT>* > set_value_visitors_list;
-    set_value_visitors_list.push_back( set_value_visitor );
-
-    // On declare un algorithme de raytracing 4D
-    ST_Grid4DWooTraversalAlgorithm<DataT> traversal_algo_accumulate( this, true, filter_visitors_list );
-    ST_Grid4DWooTraversalAlgorithm<DataT> traversal_algo_set_zero( filtered_grid , false, set_value_visitors_list );
-
-    // -----------------------------------------------------------------------------------------------------------------
-    // Loop through all points and normals of the input point cloud and start raytracing inside Hough space
-    size_t i_point = 0;
-    size_t n_points = _point_cloud_const_ptr->pointCloudIndex()->size();
-    CT_PointIterator itPoint(_point_cloud_const_ptr->pointCloudIndex());
-    for( CT_PointIterator itPoint(_point_cloud_const_ptr->pointCloudIndex()) ; itPoint.hasNext() ; i_point++ )
-    {
-        if( step_ptr != nullptr )
-        {
-            if( i_point % 100 == 0 )
-            {
-                // step_ptr->setProgress( static_cast<float>(i_point) * 100.0f / static_cast<float>(n_points) );
-            }
-
-            if( step_ptr->isStopped() )
-            {
-                return filtered_grid ;
-            }
-        }
-
-        const CT_Point&  currentPoint       = itPoint.next().currentPoint();
-        const CT_Normal& currentCTNormal    = _normal_cloud_const_ptr->constNormalAt(i_point);
-        const Vec3d      currentNormal      = currentCTNormal.head(3).cast<double>();
-
-        float normalLenght = currentNormal.norm();
-
-        if( normalLenght != 0.0 )
-        {
-
-            CT_Beam beam_01( currentPoint, currentNormal );
-            CT_Beam beam_02( currentPoint, -currentNormal );
-            
-            filter_visitor->setSumOfVisitedVotes( 0 );
-            traversal_algo_accumulate.compute(beam_01);
-            int n_votes_beam_01 = filter_visitor->sumOfVisitedVotes();
-
-            filter_visitor->setSumOfVisitedVotes( 0 );
-            traversal_algo_accumulate.compute(beam_02);
-            int n_votes_beam_02 = filter_visitor->sumOfVisitedVotes();
-
-            bool  beam_01_is_max = n_votes_beam_01 > n_votes_beam_02;
-            float n_votes_max    = static_cast<float>( std::max( n_votes_beam_01, n_votes_beam_02 ) );
-            float n_votes_min    = static_cast<float>( std::min( n_votes_beam_01, n_votes_beam_02 ) );
-            float ratio          = n_votes_max / n_votes_min;
-
-            if( ratio < ratio_thresh )
-            {
-                // Filtrer les deux directions
-                traversal_algo_set_zero.compute(beam_01);
-                traversal_algo_set_zero.compute(beam_02);
-            }
-            else if( beam_01_is_max )
-            {
-                // Filtre direction de beam 02
-                traversal_algo_set_zero.compute(beam_02);
-            }
-            else
-            {
-                // Filtre direction de beam 01
-                traversal_algo_set_zero.compute(beam_01);
-            }
-        }
+    // Si les données sont vides, retourner une copie de l'objet actuel (non filtrée)
+    if (_data.empty()) {
+        return filtered_grid;
     }
 
-    delete filter_visitor;
-    delete set_value_visitor;
+    // Trier les données
+    std::vector<DataT> sorted_data = filtered_grid->_data;
+    std::sort(sorted_data.begin(), sorted_data.end());
 
-    filtered_grid ->computeMinMax();
-*/
+    // Calculer l'indice du seuil basé sur le ratio
+    ratio_thresh = ratio_thresh/100;
+    size_t threshold_index = static_cast<size_t>(sorted_data.size()-(ratio_thresh * sorted_data.size()));
 
-    return filtered_grid ;
-}
+    DataT threshold_value = sorted_data[threshold_index];
 
+    auto pixel_it = filtered_grid->_data.begin();
+    auto pixel_it_end = filtered_grid->_data.end();
 
-
-template<class DataT>
-STL_Grid3D<DataT>* STL_Grid3D<DataT>::get_filtered_grid_using_fixed_threshold(DataT fixed_threshold, CT_AbstractStep *step_ptr) const
-{
-    STL_Grid3D<DataT>* filtered_grid = new STL_Grid3D<DataT>( *this );
-
-    cv::SparseMatConstIterator_<DataT> pixel_it = filtered_grid->_data.begin();
-    cv::SparseMatConstIterator_<DataT> pixel_it_end = filtered_grid->_data.end();
-
-    for( ; pixel_it != pixel_it_end ; ++pixel_it )
+    for ( ; pixel_it != pixel_it_end ; ++pixel_it )
     {
-        const cv::SparseMat::Node* curr_pixel_node = pixel_it.node();
-        DataT curr_val = pixel_it.template value<DataT>();
-        if( curr_val < fixed_threshold )
+        if (*pixel_it < threshold_value)
         {
-            filtered_grid->setValue(curr_pixel_node->idx[0],
-                                  curr_pixel_node->idx[1],
-                                  curr_pixel_node->idx[2],
-                                  curr_pixel_node->idx[3],
-                                  0);
+            *pixel_it = 0; // Remplace la valeur directement dans le vecteur
         }
     }
 
     return filtered_grid;
 }
 
+template<class DataT>
+STL_Grid3D<DataT>* STL_Grid3D<DataT>::get_filtered_grid_using_fixed_threshold(DataT fixed_threshold, CT_AbstractStep *step_ptr) const
+{
+    STL_Grid3D<DataT>* filtered_grid = new STL_Grid3D<DataT>( *this );
+
+    auto pixel_it = filtered_grid->_data.begin();
+    auto pixel_it_end = filtered_grid->_data.end();
+
+    for ( ; pixel_it != pixel_it_end ; ++pixel_it )
+    {
+        if (*pixel_it < fixed_threshold)
+        {
+            *pixel_it = 0; // Remplace la valeur directement dans le vecteur
+        }
+    }
+
+    return filtered_grid;
+}
 
 template< class DataT >
 void STL_Grid3D<DataT>::get_local_maximas(int nei_size,

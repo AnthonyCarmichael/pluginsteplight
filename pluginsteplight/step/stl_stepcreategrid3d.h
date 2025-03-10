@@ -25,10 +25,6 @@ protected:
     void fillPostInputConfigurationDialog(CT_StepConfigurableDialog* postInputConfigDialog) final;
     void compute() final;
 
-private:
-    void multithreadCompute(size_t pointsPerThread,const size_t threadNum, const CT_AbstractItemDrawableWithPointCloud* inPointCloud,const CT_PointsAttributesNormal* inNormalCloud, CT_Grid3DWooTraversalAlgorithm& woo);
-
-
 protected:
     CT_HandleInResultGroupCopy<>                                    _inResult;
     CT_HandleInStdZeroOrMoreGroup                                   _inZeroOrMoreRootGroup;

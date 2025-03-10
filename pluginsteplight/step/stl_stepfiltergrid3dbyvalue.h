@@ -1,19 +1,12 @@
-#ifndef STL_STEPFILTERGRID3D_H
-#define STL_STEPFILTERGRID3D_H
+#ifndef STL_STEPFILTERGRID3DBYVALUE_H
+#define STL_STEPFILTERGRID3DBYVALUE_H
 
-#include "stl_grid3d.h"
 #include "ct_step/abstract/ct_abstractstep.h"
-
-class STL_StepFilterGrid3D: public CT_AbstractStep
+#include "stl_grid3d.h"
+class STL_StepFilterGrid3DByValue : public CT_AbstractStep
 {
-    Q_OBJECT
-    using SuperClass = CT_AbstractStep;
-
-    using Vec3d = Eigen::Vector3d;
-    using Vec3f = Eigen::Vector3f;
-
 public:
-    STL_StepFilterGrid3D();
+    STL_StepFilterGrid3DByValue();
     QString description() const override;
     QString getStepDetailledDescription() const;
     CT_VirtualAbstractStep* createNewInstance() const override;
@@ -30,8 +23,8 @@ protected:
     CT_HandleInStdGroup<>                       _inGroup;
     CT_HandleInSingularItem<STL_Grid3D<int>>    _in_grid3d;
     CT_HandleOutSingularItem<STL_Grid3D<int>>   _out_grid3d;
+    int                                         _thresh;
 
-    double                                      _ratio_thresh;
 };
 
-#endif // STL_STEPFILTERGRID3D_H
+#endif // STL_STEPFILTERGRID3DBYVALUE_H

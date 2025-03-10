@@ -1,18 +1,18 @@
 #include "stl_stepfiltergrid3d.h"
 #include <ct_log/ct_logmanager.h>
 
-STL_Step_Filter_Grid3D::STL_Step_Filter_Grid3D() : SuperClass()
+STL_StepFilterGrid3D::STL_StepFilterGrid3D() : SuperClass()
 {
     _ratio_thresh = 2.0;
 }
 
-QString STL_Step_Filter_Grid3D::description() const
+QString STL_StepFilterGrid3D::description() const
 {
-    return tr("STL: 2 - Filtre une grille 3D");
+    return tr("STL: 2 - Filtre une grille 3D à partir d'un pourcentage");
 }
 
 // Step detailled description
-QString STL_Step_Filter_Grid3D::getStepDetailledDescription() const
+QString STL_StepFilterGrid3D::getStepDetailledDescription() const
 {
     return tr("Si l'algorithme qui crée une grille 3D suppose que les directions des normales "
               "des points ne sont pas forcément dans la bonne direction, il génère des cercles dans les deux directions. "
@@ -24,14 +24,14 @@ QString STL_Step_Filter_Grid3D::getStepDetailledDescription() const
               "valeurs sont supprimer de la grille, sinon la valeur la moins élevée est supprimée.");
 }
 
-CT_VirtualAbstractStep* STL_Step_Filter_Grid3D::createNewInstance() const
+CT_VirtualAbstractStep* STL_StepFilterGrid3D::createNewInstance() const
 {
-    return new STL_Step_Filter_Grid3D();
+    return new STL_StepFilterGrid3D();
 }
 
 //////////////////// PROTECTED METHODS //////////////////
 
-void STL_Step_Filter_Grid3D::declareInputModels(CT_StepInModelStructureManager& manager)
+void STL_StepFilterGrid3D::declareInputModels(CT_StepInModelStructureManager& manager)
 {
     manager.addResult(_inResult, tr("Scène(s)"));
     manager.setZeroOrMoreRootGroup(_inResult, _inZeroOrMoreRootGroup);
@@ -39,13 +39,13 @@ void STL_Step_Filter_Grid3D::declareInputModels(CT_StepInModelStructureManager& 
     manager.addItem(_inGroup, _in_grid3d,  tr("3D grid"));
 }
 
-void STL_Step_Filter_Grid3D::declareOutputModels(CT_StepOutModelStructureManager& manager)
+void STL_StepFilterGrid3D::declareOutputModels(CT_StepOutModelStructureManager& manager)
 {
     manager.addResultCopy(_inResult);
     manager.addItem(_inGroup, _out_grid3d, tr("Filtered 3D grid"));
 }
 
-void STL_Step_Filter_Grid3D::fillPostInputConfigurationDialog(CT_StepConfigurableDialog* postInputConfigDialog)
+void STL_StepFilterGrid3D::fillPostInputConfigurationDialog(CT_StepConfigurableDialog* postInputConfigDialog)
 {
     postInputConfigDialog->addDouble(tr("Ratio threshold"),
                                      tr(""),
@@ -62,7 +62,7 @@ void STL_Step_Filter_Grid3D::fillPostInputConfigurationDialog(CT_StepConfigurabl
                                      );
 }
 
-void STL_Step_Filter_Grid3D::compute()
+void STL_StepFilterGrid3D::compute()
 {
     setProgress(0);
 
@@ -75,7 +75,9 @@ void STL_Step_Filter_Grid3D::compute()
 
         const STL_Grid3D<int>* in_Grid3D = group->singularItem(_in_grid3d);
 
-        STL_Grid3D<int>* filtered_Grid3D = in_Grid3D->get_filtered_grid_using_fast_filter(_ratio_thresh, this);
+        STL_Grid3D<int>* filtered_Grid3D = in_Grid3D->get_filtered_grid_using_ratio_thresh(_ratio_thresh, this);
+
+        filtered_Grid3D->computeMinMax();
 
         PS_LOG->addInfoMessage(LogInterface::error, tr("Min value %1").arg(filtered_Grid3D->dataMin()));
         PS_LOG->addInfoMessage(LogInterface::error, tr("Max value %1").arg(filtered_Grid3D->dataMax()));

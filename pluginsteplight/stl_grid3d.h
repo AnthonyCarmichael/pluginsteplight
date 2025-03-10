@@ -106,7 +106,7 @@ public:
     inline Vec3d getResolutionsGrid() const { return _res; }
 
 
-    STL_Grid3D<DataT>* get_filtered_grid_using_fast_filter(double ratio_thresh,
+    STL_Grid3D<DataT>* get_filtered_grid_using_ratio_thresh(double ratio_thresh,
                                                             CT_AbstractStep* step_ptr = nullptr) const;
 
     STL_Grid3D<DataT>* get_filtered_grid_using_fixed_threshold(DataT fixed_threshold,
