@@ -108,63 +108,6 @@ STL_Grid3D<DataT>* STL_Grid3D<DataT>::createGrid3DFromXYZCoords(double xmin,
 template<class DataT>
 STL_Grid3D<DataT>* STL_Grid3D<DataT>::get_filtered_grid_using_ratio_thresh(double ratio_thresh, CT_AbstractStep *step_ptr) const
 {
-    // STL_Grid3D<DataT>* filtered_grid = new STL_Grid3D<DataT>(*this);
-
-    // // Si les données sont vides, retourner une copie de l'objet actuel (non filtrée)
-    // if (_data.empty()) {
-    //     return filtered_grid;
-    // }
-
-    // // Trier les données
-    // std::vector<DataT> sorted_data = filtered_grid->_data;
-    // std::sort(sorted_data.begin(), sorted_data.end());
-
-    // // Calculer l'indice du seuil basé sur le ratio
-    // ratio_thresh = ratio_thresh/100;
-    // size_t threshold_index = static_cast<size_t>(sorted_data.size()-(ratio_thresh * sorted_data.size()));
-
-    // DataT threshold_value = sorted_data[threshold_index];
-
-    // auto pixel_it = filtered_grid->_data.begin();
-    // auto pixel_it_end = filtered_grid->_data.end();
-
-    // for ( ; pixel_it != pixel_it_end ; ++pixel_it )
-    // {
-    //     if (*pixel_it < threshold_value)
-    //     {
-    //         *pixel_it = 0; // Remplace la valeur directement dans le vecteur
-    //     }
-    // }
-
-
-    // STL_Grid3D<DataT>* filtered_grid = new STL_Grid3D<DataT>(*this);
-
-    // // Si les données sont vides, retourner une copie de l'objet actuel (non filtrée)
-    // if (_data.empty()) {
-    //     return filtered_grid;
-    // }
-
-    // int maxVal = 0;
-    // for (int z = 0; z < _dimz; z++) {
-    //     maxVal = 0;
-    //     for (int y = 0; y < _dimy; y++) {
-    //         for (int x = 0; x < _dimx; x++) {
-    //             if(maxVal<filtered_grid->valueAtXYZ(x,y,z))
-    //                 maxVal = filtered_grid->valueAtXYZ(x,y,z);
-    //         }
-    //     }
-
-
-    //     for (int y = 0; y < _dimy; y++) {
-    //         for (int x = 0; x < _dimx; x++) {
-    //             if(maxVal>filtered_grid->valueAtXYZ(x,y,z))
-    //                 filtered_grid->setValueAtXYZ(x,y,z,0);
-    //         }
-    //     }
-    // }
-
-    // return filtered_grid;
-
     STL_Grid3D<DataT>* filtered_grid = new STL_Grid3D<DataT>(*this);
 
     if (_data.empty()) {
@@ -187,9 +130,8 @@ STL_Grid3D<DataT>* STL_Grid3D<DataT>::get_filtered_grid_using_ratio_thresh(doubl
             }
         }
 
-        // Paramètrise le filtre avec le ratio
+        // Paramétrer le filtre avec le ratio
         maxVal *= 1-(ratio_thresh/100);
-
 
         // Filtre tout ce qui est inférieur de la valeur max
         for (int y = 0; y < _dimy; y++) {
