@@ -49,7 +49,7 @@ void STL_StepFilterGrid3D::fillPostInputConfigurationDialog(CT_StepConfigurableD
 {
     postInputConfigDialog->addDouble(tr("Ratio threshold"),
                                      tr(""),
-                                     0.0001,
+                                     0.0000,
                                      100.0,
                                      4,
                                      _ratio_thresh,

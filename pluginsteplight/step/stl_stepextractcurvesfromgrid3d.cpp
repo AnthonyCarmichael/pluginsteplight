@@ -54,7 +54,7 @@ void STL_StepExtractCurvesFromGrid3D::declareInputModels(CT_StepInModelStructure
     manager.addResult(_inResult, tr("Scène(s)"));
     manager.setZeroOrMoreRootGroup(_inResult, _inZeroOrMoreRootGroup);
     manager.addGroup(_inZeroOrMoreRootGroup, _inGroup);
-    manager.addItem(_inGroup, _grid3D, tr("(Filtered) Hough space"));
+    manager.addItem(_inGroup, _grid3D, tr("(Filtered) grid 3D"));
 }
 
 void STL_StepExtractCurvesFromGrid3D::declareOutputModels(CT_StepOutModelStructureManager& manager)
@@ -115,119 +115,119 @@ void STL_StepExtractCurvesFromGrid3D::fillPostInputConfigurationDialog(CT_StepCo
 
 void STL_StepExtractCurvesFromGrid3D::compute()
 {
-    // setProgress(0);
+    setProgress(0);
 
-    // for (CT_StandardItemGroup* group : _inGroup.iterateOutputs(_inResult))
-    // {
-    //     CT_StandardItemGroup* outGroupOfSnakes = new CT_StandardItemGroup();
-    //     group->addGroup( _outGroupOfSnakes, outGroupOfSnakes );
+    for (CT_StandardItemGroup* group : _inGroup.iterateOutputs(_inResult))
+    {
+        CT_StandardItemGroup* outGroupOfSnakes = new CT_StandardItemGroup();
+        group->addGroup( _outGroupOfSnakes, outGroupOfSnakes );
 
-    //     if( isStopped() )
-    //     {
-    //         return;
-    //     }
+        if( isStopped() )
+        {
+            return;
+        }
 
-    //     const STL_Grid3D<int>* houhg_space_ptr = group->singularItem(_grid3D);
-    //     _tailleConeRecherche = ceil( ( _tailleConeRechercheCm / 100.0 ) / houhg_space_ptr->xres() );
-    //     const int nIterMaxGrow = qMax( static_cast<int>(_treeHeightMaximum / houhg_space_ptr->zres()), 1);
+        const STL_Grid3D<int>* grid3D_ptr = group->singularItem(_grid3D);
+        _tailleConeRecherche = ceil( ( _tailleConeRechercheCm / 100.0 ) / grid3D_ptr->getResolutionsGrid());
+        const int nIterMaxGrow = qMax( static_cast<int>(_treeHeightMaximum / grid3D_ptr->getResolutionsGrid()), 1);
 
-    //     // -----------------------------------------------------------------------
-    //     // Get local maximas
-    //     std::vector<Vec4i> local_maximas;
-    //     houhg_space_ptr->get_local_maximas(_grid3DMaximaNeighbourhoodSize, local_maximas, true);
+        // -----------------------------------------------------------------------
+        // Get local maximas
+        std::vector<Eigen::Vector3i> local_maximas;
+        grid3D_ptr->get_local_maximas(_grid3DMaximaNeighbourhoodSize, local_maximas, true);
 
-    //     if( local_maximas.empty() )
-    //     {
-    //         PS_LOG->addInfoMessage(LogInterface::error, tr("Pas de maxima locaux dans 'espace de Hough"));
-    //         return;
-    //     }
-    //     else
-    //     {
-    //         PS_LOG->addInfoMessage(LogInterface::info, tr("Trouve %1 maximas locaux").arg( local_maximas.size() ));
-    //     }
+        // if( local_maximas.empty() )
+        // {
+        //     PS_LOG->addInfoMessage(LogInterface::error, tr("Pas de maxima locaux dans 'espace de Hough"));
+        //     return;
+        // }
+        // else
+        // {
+        //     PS_LOG->addInfoMessage(LogInterface::info, tr("Trouve %1 maximas locaux").arg( local_maximas.size() ));
+        // }
 
-    //     // -----------------------------------------------------------------------
-    //     // create a repulsion image
-    //     RepulseImagePtr repulse_image_ptr = RepulseImage::createGrid4DFromWXYZCoords(houhg_space_ptr->minW(), houhg_space_ptr->minX(), houhg_space_ptr->minY(), houhg_space_ptr->minZ(),
-    //                                                                                  houhg_space_ptr->maxW(), houhg_space_ptr->maxX(), houhg_space_ptr->maxY(), houhg_space_ptr->maxZ(),
-    //                                                                                  houhg_space_ptr->wres(), houhg_space_ptr->xres(), houhg_space_ptr->yres(), houhg_space_ptr->zres(),
-    //                                                                                  std::numeric_limits<int>::max(), 0);
+        // -----------------------------------------------------------------------
+        // create a repulsion image
+        RepulseImagePtr repulse_image_ptr = RepulseImage::createGrid3DFromXYZCoords( grid3D_ptr->minX(), grid3D_ptr->minY(), grid3D_ptr->minZ(),
+                                                                                     grid3D_ptr->maxX(), grid3D_ptr->maxY(), grid3D_ptr->maxZ(),
+                                                                                     grid3D_ptr->getResolutionsGrid(),
+                                                                                     std::numeric_limits<int>::max(), 0);
 
-    //     // -----------------------------------------------------------------------
-    //     // Start a growing snake from local maximas
-    //     std::vector<SnakePtr> snakes;
-    //     for( const Vec4i& local_maxima : local_maximas )
-    //     {
-    //         if( snakes.size() >= _nSnakesMax || isStopped() )
-    //         {
-    //             break;
-    //         }
+        // -----------------------------------------------------------------------
+        // Start a growing snake from local maximas
+        // std::vector<SnakePtr> snakes;
+        // for( const Eigen::Vector3d& local_maxima : local_maximas )
+        // {
+        //     if( snakes.size() >= _nSnakesMax || isStopped() )
+        //     {
+        //         break;
+        //     }
 
-    //         if( repulse_image_ptr->valueHough(local_maxima[0], local_maxima[1], local_maxima[2], local_maxima[3]) == 0 )
-    //         {
-    //             // Initialise un contours actif a partir du maxima courant
-    //             SnakePtr curr_snake = new Snake(houhg_space_ptr,
-    //                                             repulse_image_ptr,
-    //                                             local_maxima,
-    //                                             20 );
+        //     if( repulse_image_ptr->valueHough(local_maxima[0], local_maxima[1], local_maxima[2], local_maxima[3]) == 0 )
+        //     {
+        //         // Initialise un contours actif a partir du maxima courant
+        //         SnakePtr curr_snake = new Snake(grid3D_ptr,
+        //                                         repulse_image_ptr,
+        //                                         local_maxima,
+        //                                         20 );
 
-    //             // Start growing a new snake
-    //             curr_snake->grow(nIterMaxGrow,
-    //                              _growCoeff,
-    //                              _angleConeRecherche,
-    //                              _tailleConeRecherche,
-    //                              _seuilSigmaL1);
+        //         // Start growing a new snake
+        //         curr_snake->grow(nIterMaxGrow,
+        //                          _growCoeff,
+        //                          _angleConeRecherche,
+        //                          _tailleConeRecherche,
+        //                          _seuilSigmaL1);
 
-    //             // If the snake is long enough
-    //             if( curr_snake->length3D() > _longueurMin )
-    //             {
-    //                 // Resample snake
-    //                 curr_snake->resample(0.1);
+        //         // If the snake is long enough
+        //         if( curr_snake->length3D() > _longueurMin )
+        //         {
+        //             // Resample snake
+        //             curr_snake->resample(0.1);
 
-    //                 // Mark new snake as repulsive in repulsive image
-    //                 curr_snake->markRepulsion(1.5);
+        //             // Mark new snake as repulsive in repulsive image
+        //             curr_snake->markRepulsion(1.5);
 
-    //                 // On relache le contour actif pour optimiser l'energie
-    //                 curr_snake->relax(_nIterMaxOptim,
-    //                                   _alpha, _beta, _gama,
-    //                                   1.0,
-    //                                   _timeStep,
-    //                                   _threshGradMove ); // Equivalent de 1 millimetre par defaut
+        //             // On relache le contour actif pour optimiser l'energie
+        //             curr_snake->relax(_nIterMaxOptim,
+        //                               _alpha, _beta, _gama,
+        //                               1.0,
+        //                               _timeStep,
+        //                               _threshGradMove ); // Equivalent de 1 millimetre par defaut
 
-    //                 // Add snake to the global set of snakes
-    //                 snakes.push_back(curr_snake);
-    //             }
-    //             else
-    //             {
-    //                 delete curr_snake;
-    //             }
-    //         }
-    //     }
+        //             // Add snake to the global set of snakes
+        //             snakes.push_back(curr_snake);
+        //         }
+        //         else
+        //         {
+        //             delete curr_snake;
+        //         }
+        //     }
+        // }
 
-    //     // Transform snakes to circles and free allocated memory
-    //     for( const SnakePtr snake_ptr : snakes )
-    //     {
-    //         CT_StandardItemGroup* outGroupSingleSnakes = new CT_StandardItemGroup();
-    //         outGroupOfSnakes->addGroup( _outGroupSingleSnake, outGroupSingleSnakes );
+        // // Transform snakes to circles and free allocated memory
+        // for( const SnakePtr snake_ptr : snakes )
+        // {
+        //     CT_StandardItemGroup* outGroupSingleSnakes = new CT_StandardItemGroup();
+        //     outGroupOfSnakes->addGroup( _outGroupSingleSnake, outGroupSingleSnakes );
 
-    //         // Add circles to the computree step results
-    //         std::vector< CirclePtr > raw_circles = snake_ptr->get_raw_circles();
-    //         for( const CirclePtr circle : raw_circles )
-    //         {
-    //             CT_StandardItemGroup* outGroupCircle = new CT_StandardItemGroup();
-    //             outGroupSingleSnakes->addGroup( _outGroupSingleCircle, outGroupCircle );
-    //             outGroupCircle->addSingularItem( _outCircle, circle );
-    //         }
+        //     // Add circles to the computree step results
+        //     std::vector< CirclePtr > raw_circles = snake_ptr->get_raw_circles();
+        //     for( const CirclePtr circle : raw_circles )
+        //     {
+        //         CT_StandardItemGroup* outGroupCircle = new CT_StandardItemGroup();
+        //         outGroupSingleSnakes->addGroup( _outGroupSingleCircle, outGroupCircle );
+        //         outGroupCircle->addSingularItem( _outCircle, circle );
+        //     }
 
-    //         // Free allocated memory
-    //         delete snake_ptr;
-    //     }
+        //     // Free allocated memory
+        //     delete snake_ptr;
+        // }
 
-    //     delete repulse_image_ptr;
-    // }
+        delete repulse_image_ptr;
+    }
 
 
-    // PS_LOG->addInfoMessage(LogInterface::info, tr("STL_StepExtractCurvesFromGrid3D DONE"));
+    PS_LOG->addInfoMessage(LogInterface::info, tr("STL_StepExtractCurvesFromGrid3D DONE"));
 
-    // setProgress(100);
+    setProgress(100);
 }

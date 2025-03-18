@@ -108,32 +108,97 @@ STL_Grid3D<DataT>* STL_Grid3D<DataT>::createGrid3DFromXYZCoords(double xmin,
 template<class DataT>
 STL_Grid3D<DataT>* STL_Grid3D<DataT>::get_filtered_grid_using_ratio_thresh(double ratio_thresh, CT_AbstractStep *step_ptr) const
 {
+    // STL_Grid3D<DataT>* filtered_grid = new STL_Grid3D<DataT>(*this);
+
+    // // Si les données sont vides, retourner une copie de l'objet actuel (non filtrée)
+    // if (_data.empty()) {
+    //     return filtered_grid;
+    // }
+
+    // // Trier les données
+    // std::vector<DataT> sorted_data = filtered_grid->_data;
+    // std::sort(sorted_data.begin(), sorted_data.end());
+
+    // // Calculer l'indice du seuil basé sur le ratio
+    // ratio_thresh = ratio_thresh/100;
+    // size_t threshold_index = static_cast<size_t>(sorted_data.size()-(ratio_thresh * sorted_data.size()));
+
+    // DataT threshold_value = sorted_data[threshold_index];
+
+    // auto pixel_it = filtered_grid->_data.begin();
+    // auto pixel_it_end = filtered_grid->_data.end();
+
+    // for ( ; pixel_it != pixel_it_end ; ++pixel_it )
+    // {
+    //     if (*pixel_it < threshold_value)
+    //     {
+    //         *pixel_it = 0; // Remplace la valeur directement dans le vecteur
+    //     }
+    // }
+
+
+    // STL_Grid3D<DataT>* filtered_grid = new STL_Grid3D<DataT>(*this);
+
+    // // Si les données sont vides, retourner une copie de l'objet actuel (non filtrée)
+    // if (_data.empty()) {
+    //     return filtered_grid;
+    // }
+
+    // int maxVal = 0;
+    // for (int z = 0; z < _dimz; z++) {
+    //     maxVal = 0;
+    //     for (int y = 0; y < _dimy; y++) {
+    //         for (int x = 0; x < _dimx; x++) {
+    //             if(maxVal<filtered_grid->valueAtXYZ(x,y,z))
+    //                 maxVal = filtered_grid->valueAtXYZ(x,y,z);
+    //         }
+    //     }
+
+
+    //     for (int y = 0; y < _dimy; y++) {
+    //         for (int x = 0; x < _dimx; x++) {
+    //             if(maxVal>filtered_grid->valueAtXYZ(x,y,z))
+    //                 filtered_grid->setValueAtXYZ(x,y,z,0);
+    //         }
+    //     }
+    // }
+
+    // return filtered_grid;
 
     STL_Grid3D<DataT>* filtered_grid = new STL_Grid3D<DataT>(*this);
 
-    // Si les données sont vides, retourner une copie de l'objet actuel (non filtrée)
     if (_data.empty()) {
         return filtered_grid;
     }
 
-    // Trier les données
-    std::vector<DataT> sorted_data = filtered_grid->_data;
-    std::sort(sorted_data.begin(), sorted_data.end());
+    for (int z = 0; z < _dimz; z++) {
+        int maxVal = 0;
 
-    // Calculer l'indice du seuil basé sur le ratio
-    ratio_thresh = ratio_thresh/100;
-    size_t threshold_index = static_cast<size_t>(sorted_data.size()-(ratio_thresh * sorted_data.size()));
+        // Détermine un pointeur qui représente le début de chaque tranche de z
+        DataT* slice_start = &filtered_grid->_data[z * _dimx * _dimy];
 
-    DataT threshold_value = sorted_data[threshold_index];
+        // Cherche la val max de la tranche
+        for (int y = 0; y < _dimy; y++) {
+            for (int x = 0; x < _dimx; x++) {
+                DataT* val_ptr = slice_start + (y * _dimx) + x;
+                if (*val_ptr > maxVal) {
+                    maxVal = *val_ptr;
+                }
+            }
+        }
 
-    auto pixel_it = filtered_grid->_data.begin();
-    auto pixel_it_end = filtered_grid->_data.end();
+        // Paramètrise le filtre avec le ratio
+        maxVal *= 1-(ratio_thresh/100);
 
-    for ( ; pixel_it != pixel_it_end ; ++pixel_it )
-    {
-        if (*pixel_it < threshold_value)
-        {
-            *pixel_it = 0; // Remplace la valeur directement dans le vecteur
+
+        // Filtre tout ce qui est inférieur de la valeur max
+        for (int y = 0; y < _dimy; y++) {
+            for (int x = 0; x < _dimx; x++) {
+                DataT* val_ptr = slice_start + (y * _dimx) + x;
+                if (*val_ptr < maxVal) {
+                    *val_ptr = 0;
+                }
+            }
         }
     }
 
@@ -152,7 +217,7 @@ STL_Grid3D<DataT>* STL_Grid3D<DataT>::get_filtered_grid_using_fixed_threshold(Da
     {
         if (*pixel_it < fixed_threshold)
         {
-            *pixel_it = 0; // Remplace la valeur directement dans le vecteur
+            *pixel_it = 0;
         }
     }
 
@@ -166,7 +231,7 @@ void STL_Grid3D<DataT>::get_local_maximas(int nei_size,
 {
     out_local_maximas.clear();
 
-    Vec3i bot(0,0,0,0);
+    Vec3i bot(0,0,0);
     Vec3i top(_dimx, _dimy, _dimz );
 
     get_local_maximas_in_bbox( bot, top, nei_size, out_local_maximas, sort_descending_order );
@@ -179,7 +244,7 @@ void STL_Grid3D<DataT>::get_local_maximas_within_height_range(float zmin, float 
 {
     out_local_maximas.clear();
 
-    // Calcul du niveau z correspondant a minz a partir du sol (bot de l'espace de Hough)
+    // Calcul du niveau z correspondant a minz a partir du sol
     int minLevZ;
     if( !levZ( minZ() + zmin , minLevZ) )
     {
@@ -208,7 +273,7 @@ void STL_Grid3D<DataT>::get_local_maximas_in_bbox(const Vec3i& bot, const Vec3i&
 {
     out_local_maximas.clear();
 
-    // On met a jour la bbox pour etre sur de ne pas aller hors de l'espace de Hough (perte de temps dans le parcours car beaucoup de tests potentiels de cellules hors de l'espace)
+    // On met a jour la bbox pour etre sur de ne pas aller de la grille 3D (perte de temps dans le parcours car beaucoup de tests potentiels de cellules hors de la grille)
     Vec3i top_bbox = top;
     Vec3i bot_bbox = bot;
     Vec3i grid_dim   = dim();
@@ -236,31 +301,37 @@ void STL_Grid3D<DataT>::get_local_maximas_in_bbox(const Vec3i& bot, const Vec3i&
         }
     }
 
-    cv::SparseMatConstIterator_<DataT> pixel_it = _data.begin();
-    cv::SparseMatConstIterator_<DataT> pixel_it_end = _data.end();
+    auto pixel_it = _data.begin();
+    auto pixel_it_end = _data.end();
+
+    //cv::SparseMatConstIterator_<DataT> pixel_it = _data.begin();
+    //cv::SparseMatConstIterator_<DataT> pixel_it_end = _data.end();
+
 
     for( ; pixel_it != pixel_it_end ; ++pixel_it )
     {
-        const cv::SparseMat::Node* curr_pixel_node = pixel_it.node();
-        DataT curr_val = pixel_it.template value<DataT>();
-        if( curr_val > 0 )
-        {
-            Vec3i pix( curr_pixel_node->idx[0], curr_pixel_node->idx[1], curr_pixel_node->idx[2]);
+        //cv::SparseMat::Node* curr_pixel_node = pixel_it.node();
+        //DataT curr_val = pixel_it.template value<DataT>();
 
-            if( is_pixel_in_bbox(pix, bot_bbox, top_bbox) )
-            {
-                if( is_pixel_local_maxima( pix, nei_size ) )
-                {
-                    out_local_maximas.push_back( pix );
-                }
-            }
+        if( *pixel_it > 0 )
+        {
+            // Vérifier comment avoir le x,y,z du point
+            // Vec3i pix( pixel_it->idx[0], curr_pixel_node->idx[1], curr_pixel_node->idx[2]);
+
+            // if( is_pixel_in_bbox(pix, bot_bbox, top_bbox) )
+            // {
+            //     if( is_pixel_local_maxima( pix, nei_size ) )
+            //     {
+            //         out_local_maximas.push_back( pix );
+            //     }
+            // }
         }
     }
 
     if( sort_descending_order )
     {
         std::sort(out_local_maximas.begin(), out_local_maximas.end(),
-                  [&out_local_maximas, this](const Vec3i& pix1, const Vec3i& pix2) -> bool { return value(pix1[0], pix1[1], pix1[2], pix1[3]) > value(pix2[0], pix2[1], pix2[2], pix2[3]); } );
+                  [&out_local_maximas, this](const Vec3i& pix1, const Vec3i& pix2) -> bool { return value(pix1[0], pix1[1], pix1[2]) > value(pix2[0], pix2[1], pix2[2]); } );
     }
 }
 
@@ -279,7 +350,7 @@ bool STL_Grid3D<DataT>::is_pixel_local_maxima( const Vec3i& pix, int nei_size ) 
     Vec3i bot = pix - size;
     Vec3i top = pix + size;
 
-    // On met a jour la bbox pour etre sur de ne pas aller hors de l'espace de Hough (perte de temps dans le parcours car beaucoup de tests potentiels de cellules hors de l'espace)
+    // On met a jour la bbox pour etre sur de ne pas aller de la grille 3D (perte de temps dans le parcours car beaucoup de tests potentiels de cellules hors de la grille)
     for( int axe = 0 ; axe < 3 ; axe++ )
     {
         if( bot[axe] < 0 )
@@ -343,7 +414,6 @@ STL_Grid3D<DataT> operator+(const STL_Grid3D<DataT>& leftGrid,const STL_Grid3D<D
                           0);
 
     std::transform(leftGrid._data.begin(), leftGrid._data.end(), rightGrid._data.begin(), rslt._data.begin(), std::plus<DataT>());
-    //std::transform(rslt._data.begin(), rslt._data.end(), rightGrid._data.begin(), rightGrid._data.begin(), std::plus<int>());
 
     return rslt;
 }
@@ -352,7 +422,9 @@ STL_Grid3D<DataT> operator+(const STL_Grid3D<DataT>& leftGrid,const STL_Grid3D<D
 template< class DataT >
 STL_Grid3D<DataT>& STL_Grid3D<DataT>::operator+=(const STL_Grid3D<DataT>& other)
 {
-    if (_dimx != other._dimx || _dimy != other._dimy || _dimz != other._dimz) {
+    if (_dimx != other._dimx ||
+        _dimy != other._dimy ||
+        _dimz != other._dimz) {
         throw std::invalid_argument("Les grilles doivent avoir la même taille pour être additionnées.");
     }
 

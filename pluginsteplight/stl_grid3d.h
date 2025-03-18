@@ -103,7 +103,7 @@ public:
      */
     ~STL_Grid3D() override;
 
-    inline Vec3d getResolutionsGrid() const { return _res; }
+    inline double getResolutionsGrid() const { return _res; }
 
 
     STL_Grid3D<DataT>* get_filtered_grid_using_ratio_thresh(double ratio_thresh,
