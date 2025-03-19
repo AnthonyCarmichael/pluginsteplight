@@ -149,6 +149,9 @@ void STL_STEPCreateGrid3D::compute()
 
                         woo.compute(beam_01, endPoint1);
                         woo.compute(beam_02, endPoint2);
+
+                        delete endPoint1;
+                        delete endPoint2;
                     }
                 }
 
