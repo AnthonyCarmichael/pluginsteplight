@@ -144,8 +144,11 @@ void STL_STEPCreateGrid3D::compute()
                         CT_Beam beam_01(currentPoint, currentNormal);
                         CT_Beam beam_02(currentPoint, -currentNormal);
 
-                        woo.compute(beam_01);
-                        woo.compute(beam_02);
+                        Eigen::Vector3d* endPoint1 = new Eigen::Vector3d(currentPoint + currentNormal);
+                        Eigen::Vector3d* endPoint2 = new Eigen::Vector3d(currentPoint - currentNormal);
+
+                        woo.compute(beam_01, endPoint1);
+                        woo.compute(beam_02, endPoint2);
                     }
                 }
 
