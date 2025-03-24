@@ -69,7 +69,7 @@ void STL_StepFilterByRatio::compute()
 
         ConstGrid3DPtr in_grid_3d = group->singularItem(_in_grid_3d);
 
-        Grid3DPtr filtered_grid_3d = in_grid_3d->get_filtered_hs_using_fast_filter(_ratio_thresh, this);
+        Grid3DPtr filtered_grid_3d = in_grid_3d->get_filtered_grid3d_using_fast_filter(_ratio_thresh, this);
 
         PS_LOG->addInfoMessage(LogInterface::error, tr("Min value %1").arg(filtered_grid_3d->dataMin()));
         PS_LOG->addInfoMessage(LogInterface::error, tr("Max value %1").arg(filtered_grid_3d->dataMax()));

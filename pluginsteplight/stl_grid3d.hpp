@@ -178,16 +178,16 @@ STL_Grid3D<DataT>* STL_Grid3D<DataT>::get_filtered_grid3d_using_fast_filter(doub
 
     // On declare tout ce qui est necessaire pour faire le raytracing 3d
     STL_VisitorGrid3DFastFilter<DataT>* filter_visitor = new STL_VisitorGrid3DFastFilter<DataT>( this );
-    QList< ST_AbstractVisitorGrid3D<DataT>* > filter_visitors_list;
+    QList< STL_AbstractVisitorGrid3D<DataT>* > filter_visitors_list;
     filter_visitors_list.push_back( filter_visitor );
 
-    ST_VisitorGrid3DSetValue<DataT>* set_value_visitor = new ST_VisitorGrid3DSetValue<DataT>(filtered_grid3d, static_cast<DataT>(0) );
-    QList< ST_AbstractVisitorGrid3D<DataT>* > set_value_visitors_list;
+    STL_VisitorGrid3DSetValue<DataT>* set_value_visitor = new STL_VisitorGrid3DSetValue<DataT>(filtered_grid3d, static_cast<DataT>(0) );
+    QList< STL_AbstractVisitorGrid3D<DataT>* > set_value_visitors_list;
     set_value_visitors_list.push_back( set_value_visitor );
 
     // On declare un algorithme de raytracing 3D
-    ST_Grid3DWooTraversalAlgorithm<DataT> traversal_algo_accumulate( this, true, filter_visitors_list );
-    ST_Grid3DWooTraversalAlgorithm<DataT> traversal_algo_set_zero( filtered_grid3d, false, set_value_visitors_list );
+    CT_Grid3DWooTraversalAlgorithm<DataT> traversal_algo_accumulate( this, true, filter_visitors_list );
+    CT_Grid3DWooTraversalAlgorithm<DataT> traversal_algo_set_zero( filtered_grid3d, false, set_value_visitors_list );
 
     // -----------------------------------------------------------------------------------------------------------------
     // Loop through all points and normals of the input point cloud and start raytracing inside 3D grid
@@ -217,8 +217,8 @@ STL_Grid3D<DataT>* STL_Grid3D<DataT>::get_filtered_grid3d_using_fast_filter(doub
 
         if( normalLenght != 0.0 )
         {
-            ST_Beam3D beam_01( currentPoint, currentNormal );
-            ST_Beam3D beam_02( currentPoint, -currentNormal );
+            CT_Beam beam_01( currentPoint, currentNormal );
+            CT_Beam beam_02( currentPoint, -currentNormal );
 
             filter_visitor->setSumOfVisitedVotes( 0 );
             traversal_algo_accumulate.compute(beam_01);
