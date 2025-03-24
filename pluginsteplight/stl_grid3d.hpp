@@ -5,7 +5,12 @@
 #include "stl_grid3d.h"
 #include "opencv2/core/mat.hpp"
 #include "ct_log/ct_logmanager.h"
- #include <numeric>
+#include <numeric>
+#include "ct_itemdrawable/tools/gridtools/ct_grid3dwootraversalalgorithm.h"
+#include "stl_grid3dbeamvisitor.h"
+#include "stl_visitorgrid3dincrement.h"
+#include "stl_visitorgrid3dfastfilter.h"
+#include "stl_visitorgrid3dsetvalue.h"
 
 template< class DataT >
 STL_Grid3D<DataT>::STL_Grid3D() :
@@ -165,6 +170,96 @@ STL_Grid3D<DataT>* STL_Grid3D<DataT>::get_filtered_grid_using_fixed_threshold(Da
 
     return filtered_grid;
 }
+template< class DataT >
+STL_Grid3D<DataT>* STL_Grid3D<DataT>::get_filtered_grid3d_using_fast_filter(double ratio_thresh,
+                                                                              CT_AbstractStep* step_ptr) const
+{
+    STL_Grid3D<DataT>* filtered_grid3d = new STL_Grid3D<DataT>( *this );
+
+    // On declare tout ce qui est necessaire pour faire le raytracing 3d
+    STL_VisitorGrid3DFastFilter<DataT>* filter_visitor = new STL_VisitorGrid3DFastFilter<DataT>( this );
+    QList< ST_AbstractVisitorGrid3D<DataT>* > filter_visitors_list;
+    filter_visitors_list.push_back( filter_visitor );
+
+    ST_VisitorGrid3DSetValue<DataT>* set_value_visitor = new ST_VisitorGrid3DSetValue<DataT>(filtered_grid3d, static_cast<DataT>(0) );
+    QList< ST_AbstractVisitorGrid3D<DataT>* > set_value_visitors_list;
+    set_value_visitors_list.push_back( set_value_visitor );
+
+    // On declare un algorithme de raytracing 3D
+    ST_Grid3DWooTraversalAlgorithm<DataT> traversal_algo_accumulate( this, true, filter_visitors_list );
+    ST_Grid3DWooTraversalAlgorithm<DataT> traversal_algo_set_zero( filtered_grid3d, false, set_value_visitors_list );
+
+    // -----------------------------------------------------------------------------------------------------------------
+    // Loop through all points and normals of the input point cloud and start raytracing inside 3D grid
+    size_t i_point = 0;
+    size_t n_points = _point_cloud_const_ptr->pointCloudIndex()->size();
+    CT_PointIterator itPoint(_point_cloud_const_ptr->pointCloudIndex());
+    for( CT_PointIterator itPoint(_point_cloud_const_ptr->pointCloudIndex()) ; itPoint.hasNext() ; i_point++ )
+    {
+        if( step_ptr != nullptr )
+        {
+            if( i_point % 100 == 0 )
+            {
+                // step_ptr->setProgress( static_cast<float>(i_point) * 100.0f / static_cast<float>(n_points) );
+            }
+
+            if( step_ptr->isStopped() )
+            {
+                return filtered_grid3d;
+            }
+        }
+
+        const CT_Point&  currentPoint       = itPoint.next().currentPoint();
+        const CT_Normal& currentCTNormal    = _normal_cloud_const_ptr->constNormalAt(i_point);
+        const Vec3d      currentNormal      = currentCTNormal.head(3).cast<double>();
+
+        float normalLenght = currentNormal.norm();
+
+        if( normalLenght != 0.0 )
+        {
+            ST_Beam3D beam_01( currentPoint, currentNormal );
+            ST_Beam3D beam_02( currentPoint, -currentNormal );
+
+            filter_visitor->setSumOfVisitedVotes( 0 );
+            traversal_algo_accumulate.compute(beam_01);
+            int n_votes_beam_01 = filter_visitor->sumOfVisitedVotes();
+
+            filter_visitor->setSumOfVisitedVotes( 0 );
+            traversal_algo_accumulate.compute(beam_02);
+            int n_votes_beam_02 = filter_visitor->sumOfVisitedVotes();
+
+            bool  beam_01_is_max = n_votes_beam_01 > n_votes_beam_02;
+            float n_votes_max    = static_cast<float>( std::max( n_votes_beam_01, n_votes_beam_02 ) );
+            float n_votes_min    = static_cast<float>( std::min( n_votes_beam_01, n_votes_beam_02 ) );
+            float ratio          = n_votes_max / n_votes_min;
+
+            if( ratio < ratio_thresh )
+            {
+                // Filtrer les deux directions
+                traversal_algo_set_zero.compute(beam_01);
+                traversal_algo_set_zero.compute(beam_02);
+            }
+            else if( beam_01_is_max )
+            {
+                // Filtre direction de beam 02
+                traversal_algo_set_zero.compute(beam_02);
+            }
+            else
+            {
+                // Filtre direction de beam 01
+                traversal_algo_set_zero.compute(beam_01);
+            }
+        }
+    }
+
+    delete filter_visitor;
+    delete set_value_visitor;
+
+    filtered_grid3d->computeMinMax();
+
+    return filtered_grid3d;
+}
+
 
 template< class DataT >
 void STL_Grid3D<DataT>::get_local_maximas(int nei_size,

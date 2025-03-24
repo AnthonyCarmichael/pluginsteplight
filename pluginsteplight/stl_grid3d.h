@@ -112,6 +112,8 @@ public:
     STL_Grid3D<DataT>* get_filtered_grid_using_fixed_threshold(DataT fixed_threshold,
                                                                 CT_AbstractStep* step_ptr = nullptr) const;
 
+    STL_Grid3D<DataT>* get_filtered_grid3d_using_fast_filter(double ratio_thresh,
+                                                            CT_AbstractStep* step_ptr = nullptr) const;
 
     void get_local_maximas(int nei_size,
                            std::vector<Vec3i>& out_local_maximas,

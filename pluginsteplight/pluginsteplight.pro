@@ -15,6 +15,7 @@ HEADERS += \
     $$CT_PREFIX_LIB/ctlibplugin/pluginentryinterface.h\
     step/stl_stepcreategrid3d.h \
     step/stl_stepextractcurvesfromgrid3d.h \
+    step/stl_stepfilterbyratio.h \
     step/stl_stepfiltergrid3d.h \
     step/stl_stepfiltergrid3dbyvalue.h \
     stl_grid3d.h \
@@ -27,6 +28,7 @@ HEADERS += \
 SOURCES += \
     step/stl_stepcreategrid3d.cpp \
     step/stl_stepextractcurvesfromgrid3d.cpp \
+    step/stl_stepfilterbyratio.cpp \
     step/stl_stepfiltergrid3d.cpp \
     step/stl_stepfiltergrid3dbyvalue.cpp \
     stl_grid3d.cpp \
