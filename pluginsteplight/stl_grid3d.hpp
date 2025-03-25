@@ -106,7 +106,7 @@ STL_Grid3D<DataT>* STL_Grid3D<DataT>::createGrid3DFromXYZCoords(double xmin,
 
 
 template<class DataT>
-STL_Grid3D<DataT>* STL_Grid3D<DataT>::get_filtered_grid_using_ratio_thresh(double ratio_thresh, CT_AbstractStep *step_ptr) const
+STL_Grid3D<DataT>* STL_Grid3D<DataT>::get_filtered_grid_using_ratio_thresh(int neighbours, CT_AbstractStep *step_ptr) const
 {
     STL_Grid3D<DataT>* filtered_grid = new STL_Grid3D<DataT>(*this);
 
@@ -114,31 +114,43 @@ STL_Grid3D<DataT>* STL_Grid3D<DataT>::get_filtered_grid_using_ratio_thresh(doubl
         return filtered_grid;
     }
 
-    for (int z = 0; z < _dimz; z++) {
-        int maxVal = 0;
+    for (int z = 0; z < _dimz; ++z) {
 
-        // Détermine un pointeur qui représente le début de chaque tranche de z
+        // Pour chaque tranche de z, on ne conserve que les maximas
         DataT* slice_start = &filtered_grid->_data[z * _dimx * _dimy];
+        for (int x = 0; x < _dimx; ++x) {
+            for (int y = 0; y < _dimy; ++y) {
+                DataT* currVal = slice_start + (y * _dimx) + x;
 
-        // Cherche la val max de la tranche
-        for (int y = 0; y < _dimy; y++) {
-            for (int x = 0; x < _dimx; x++) {
-                DataT* val_ptr = slice_start + (y * _dimx) + x;
-                if (*val_ptr > maxVal) {
-                    maxVal = *val_ptr;
+                // Si la cellule courante est à 0, on passe
+                if (*currVal == 0)
+                    continue;
+
+                bool is_maxima = true;
+
+                // Vérification des voisins
+                for (int xx = -neighbours; xx <= neighbours && is_maxima; ++xx) {
+                    for (int yy = -neighbours; yy <= neighbours; ++yy) {
+                        if (xx == 0 && yy == 0) continue; // Ignorer la cellule elle-même
+
+                        int nx = x + xx;
+                        int ny = y + yy;
+
+                        // Vérification des limites de la grille
+                        if (nx >= 0 && ny >= 0 && nx < _dimx && ny < _dimy) {
+                            DataT* neiVal = slice_start + (ny * _dimx) + nx;
+
+                            if (*currVal < *neiVal) {
+                                is_maxima = false;
+                                break;
+                            }
+                        }
+                    }
                 }
-            }
-        }
 
-        // Paramétrer le filtre avec le ratio
-        maxVal *= 1-(ratio_thresh/100);
-
-        // Filtre tout ce qui est inférieur de la valeur max
-        for (int y = 0; y < _dimy; y++) {
-            for (int x = 0; x < _dimx; x++) {
-                DataT* val_ptr = slice_start + (y * _dimx) + x;
-                if (*val_ptr < maxVal) {
-                    *val_ptr = 0;
+                // Si la cellule n'est pas un maxima, on la met à 0
+                if (!is_maxima) {
+                    *currVal = 0;
                 }
             }
         }
