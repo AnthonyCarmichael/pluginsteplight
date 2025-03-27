@@ -172,6 +172,8 @@ void STL_STEPCreateGrid3D::compute()
             }
         }
 
+        grid_3d->setPointCloudPtr(inPointCloud,inNormalCloud);
+
         grid_3d->computeMinMax();
 
         PS_LOG->addInfoMessage(LogInterface::error, tr("Min value %1").arg(grid_3d->dataMin()));

@@ -472,4 +472,10 @@ STL_Grid3D<DataT>& STL_Grid3D<DataT>::operator+=(const STL_Grid3D<DataT>& other)
     return *this;
 }
 
+template< class DataT >
+void STL_Grid3D<DataT>::setPointCloudPtr(PointCloudConstPtr point_cloud_const_ptr, NormalCloudConstPtr normal_cloud_const_ptr) {
+    _point_cloud_const_ptr = point_cloud_const_ptr;
+    _normal_cloud_const_ptr = normal_cloud_const_ptr;
+}
+
 #endif // STL_GRID3D_HPP

@@ -286,6 +286,8 @@ public:
 
     STL_Grid3D<DataT>& operator+=(const STL_Grid3D<DataT>& other);
 
+    void setPointCloudPtr(PointCloudConstPtr point_cloud_const_ptr, NormalCloudConstPtr normal_cloud_const_ptr);
+
 protected:
     // -------------------------------------------------------
     // Attributes
