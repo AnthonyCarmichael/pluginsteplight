@@ -106,7 +106,7 @@ STL_Grid3D<DataT>* STL_Grid3D<DataT>::createGrid3DFromXYZCoords(double xmin,
 
 
 template<class DataT>
-STL_Grid3D<DataT>* STL_Grid3D<DataT>::get_filtered_grid_using_ratio_thresh(int neighbours, CT_AbstractStep *step_ptr) const
+STL_Grid3D<DataT>* STL_Grid3D<DataT>::get_filtered_grid_by_neigbhours(int neighbours, CT_AbstractStep *step_ptr) const
 {
     STL_Grid3D<DataT>* filtered_grid = new STL_Grid3D<DataT>(*this);
 

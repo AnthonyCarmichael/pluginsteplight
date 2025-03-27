@@ -9,20 +9,13 @@ STL_StepFilterGrid3D::STL_StepFilterGrid3D() : SuperClass()
 
 QString STL_StepFilterGrid3D::description() const
 {
-    return tr("STL: 2 - Filtre une grille 3D");
+    return tr("STL: 2 - Filtre une grille 3D selon ses voisins");
 }
 
 // Step detailled description
 QString STL_StepFilterGrid3D::getStepDetailledDescription() const
 {
-    return tr("Si l'algorithme qui crée une grille 3D suppose que les directions des normales "
-              "des points ne sont pas forcément dans la bonne direction, il génère des cercles dans les deux directions. "
-              "C'est pourquoi, si nous prenons l'exemple d'un tronc, il existe des valeurs élevées au centre du "
-              "tronc mais aussi tout autour à une certaine distance. Ce filtre à pour but de supprimer les valeurs "
-              "élevées en dehors du tronc. Pour chaque point du nuage l'algorithme va cumuler les valeurs dans la direction "
-              "de la normale et cumuler dans une autre variable les valeurs dans le sens opposé de la normale. Le ratio "
-              "calculé est max(cumul1, cumul2)/min(cumul1, cumul2). Si ce ratio est inférieur au ratio minimum les deux "
-              "valeurs sont supprimer de la grille, sinon la valeur la moins élevée est supprimée.");
+    return tr("Ce filtre compare chaque valeur des cellules avec ses voisins pour conserver seulement les maximas locaux.");
 }
 
 CT_VirtualAbstractStep* STL_StepFilterGrid3D::createNewInstance() const
@@ -77,7 +70,7 @@ void STL_StepFilterGrid3D::compute()
 
         const STL_Grid3D<int>* in_Grid3D = group->singularItem(_in_grid3d);
 
-        STL_Grid3D<int>* filtered_Grid3D = in_Grid3D->get_filtered_grid_using_ratio_thresh(_neighbours, this);
+        STL_Grid3D<int>* filtered_Grid3D = in_Grid3D->get_filtered_grid_by_neigbhours(_neighbours, this);
 
         filtered_Grid3D->computeMinMax();
 
