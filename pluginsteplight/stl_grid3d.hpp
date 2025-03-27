@@ -8,7 +8,6 @@
 #include <numeric>
 #include "ct_itemdrawable/tools/gridtools/ct_grid3dwootraversalalgorithm.h"
 #include "stl_grid3dbeamvisitor.h"
-#include "stl_visitorgrid3dincrement.h"
 #include "stl_visitorgrid3dfastfilter.h"
 #include "stl_visitorgrid3dsetvalue.h"
 
@@ -174,20 +173,23 @@ template< class DataT >
 STL_Grid3D<DataT>* STL_Grid3D<DataT>::get_filtered_grid3d_using_fast_filter(double ratio_thresh,
                                                                               CT_AbstractStep* step_ptr) const
 {
+    STL_Grid3D<DataT>* grid3d = new STL_Grid3D<DataT>( *this );
     STL_Grid3D<DataT>* filtered_grid3d = new STL_Grid3D<DataT>( *this );
 
     // On declare tout ce qui est necessaire pour faire le raytracing 3d
-    STL_VisitorGrid3DFastFilter<DataT>* filter_visitor = new STL_VisitorGrid3DFastFilter<DataT>( this );
-    QList< STL_AbstractVisitorGrid3D<DataT>* > filter_visitors_list;
-    filter_visitors_list.push_back( filter_visitor );
+    STL_VisitorGrid3DFastFilter* filter_visitor = new STL_VisitorGrid3DFastFilter(grid3d);
+    QList<CT_AbstractGrid3DBeamVisitor*> filter_visitors_list;
+    filter_visitors_list.push_back(filter_visitor);
 
-    STL_VisitorGrid3DSetValue<DataT>* set_value_visitor = new STL_VisitorGrid3DSetValue<DataT>(filtered_grid3d, static_cast<DataT>(0) );
-    QList< STL_AbstractVisitorGrid3D<DataT>* > set_value_visitors_list;
-    set_value_visitors_list.push_back( set_value_visitor );
+    STL_VisitorGrid3DSetValue* set_value_visitor = new STL_VisitorGrid3DSetValue(filtered_grid3d, static_cast<DataT>(0) );
+    QList<CT_AbstractGrid3DBeamVisitor*> set_value_visitors_list;
+    set_value_visitors_list.push_back(set_value_visitor);
 
     // On declare un algorithme de raytracing 3D
-    CT_Grid3DWooTraversalAlgorithm<DataT> traversal_algo_accumulate( this, true, filter_visitors_list );
-    CT_Grid3DWooTraversalAlgorithm<DataT> traversal_algo_set_zero( filtered_grid3d, false, set_value_visitors_list );
+    CT_Grid3DWooTraversalAlgorithm traversal_algo_accumulate( grid3d, true, filter_visitors_list );
+    CT_Grid3DWooTraversalAlgorithm traversal_algo_set_zero( filtered_grid3d, false, set_value_visitors_list );
+
+    delete grid3d;
 
     // -----------------------------------------------------------------------------------------------------------------
     // Loop through all points and normals of the input point cloud and start raytracing inside 3D grid
@@ -198,15 +200,15 @@ STL_Grid3D<DataT>* STL_Grid3D<DataT>::get_filtered_grid3d_using_fast_filter(doub
     {
         if( step_ptr != nullptr )
         {
-            if( i_point % 100 == 0 )
-            {
-                // step_ptr->setProgress( static_cast<float>(i_point) * 100.0f / static_cast<float>(n_points) );
-            }
+            // if( i_point % 100 == 0 )
+            // {
+            //     setProgress( static_cast<float>(i_point) * 100.0f / static_cast<float>(n_points) );
+            // }
 
-            if( step_ptr->isStopped() )
-            {
-                return filtered_grid3d;
-            }
+            // if(isStopped())
+            // {
+            //     return filtered_grid3d;
+            // }
         }
 
         const CT_Point&  currentPoint       = itPoint.next().currentPoint();

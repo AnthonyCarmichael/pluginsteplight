@@ -1,6 +1,7 @@
 #include "stl_steppluginmanager.h"
 #include "step/stl_stepcreategrid3d.h"
 #include "step/stl_stepextractcurvesfromgrid3d.h"
+#include "step/stl_stepfilterbyratio.h"
 #include "step/stl_stepfiltergrid3d.h"
 #include "step/stl_stepfiltergrid3dbyvalue.h"
 
@@ -33,6 +34,7 @@ bool ST_STL_StepPluginManager::loadGenericsStep()
     addNewPointsStep<STL_STEPCreateGrid3D>(CT_StepsMenu::LP_Points);
     addNewPointsStep<STL_StepFilterGrid3D>(CT_StepsMenu::LP_Points);
     addNewPointsStep<STL_StepFilterGrid3DByValue>(CT_StepsMenu::LP_Points);
+    addNewPointsStep<STL_StepFilterByRatio>(CT_StepsMenu::LP_Points);
     addNewPointsStep<STL_StepExtractCurvesFromGrid3D>(CT_StepsMenu::LP_Points);
     return true;
 }

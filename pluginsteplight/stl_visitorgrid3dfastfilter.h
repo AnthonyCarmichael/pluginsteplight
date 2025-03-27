@@ -1,22 +1,13 @@
 #ifndef STL_VISITORGRID3DFASTFILTER_H
 #define STL_VISITORGRID3DFASTFILTER_H
 
-#include "stl_abstractvisitorgrid3d.h"
+// Inherits from abstract visitor
+#include "ct_itemdrawable/ct_grid3d.h"
 #include "ct_itemdrawable/ct_beam.h"
+#include "ct_itemdrawable/tools/gridtools/ct_abstractgrid3dbeamvisitor.h"
 
-template< class DataT >
-class STL_Grid3D;
-
-template< class DataT >
-class STL_VisitorGrid3DFastFilter: public STL_AbstractVisitorGrid3D<DataT>
+class STL_VisitorGrid3DFastFilter: public CT_AbstractGrid3DBeamVisitor
 {
-    using SuperClass                = STL_AbstractVisitorGrid3D<DataT>;
-    using Grid3D                    = STL_Grid3D<DataT>;
-    using Grid3DPtr                 = Grid3D*;
-    using Grid3DPtrConst            = Grid3DPtr const;
-    using ConstGrid3D               = const Grid3D;
-    using ConstGrid3DPtr            = ConstGrid3D*;
-    using ConstGrid3DPtrConst       = ConstGrid3DPtr const;
 
 public:
     /*!
@@ -26,7 +17,7 @@ public:
      *
      * \param grid : grille que le visiteur viste
      */
-    STL_VisitorGrid3DFastFilter(ConstGrid3DPtrConst grid_3d_ptr);
+    STL_VisitorGrid3DFastFilter(CT_Grid3D<int> *grid);
 
     /*!
       * Destructeur (rien a faire, il ne doit pas liberer l'image qu'il visite!!)
@@ -41,16 +32,15 @@ public:
      * \param levz : coordonnee du pixel a visiter
      * \param beam : rayon qui traverse la grille
      */
-    virtual void visit(size_t levx, size_t levy, size_t levz, const CT_Beam* const beam) override;
+    virtual void visit(const size_t &index, const CT_Beam *beam);
 
     int sumOfVisitedVotes() const;
 
     void setSumOfVisitedVotes(int sumOfVisitedVotes);
 
-protected :
-    ConstGrid3DPtrConst     _grid_3d_ptr;
+private :
+    CT_Grid3D<int>*         _grid;
     int                     _sumOfVisitedVotes;
 };
 
-#include "stl_visitorgrid3dfastfilter.hpp"
 #endif // STL_VISITORGRID3DFASTFILTER_H

@@ -9,7 +9,7 @@ STL_StepFilterByRatio::STL_StepFilterByRatio() : SuperClass()
 
 QString STL_StepFilterByRatio::description() const
 {
-    return tr("2 - Filtre une grille 3D");
+    return tr("STL: 2 - Filtre une grille 3D");
 }
 
 // Step detailled description

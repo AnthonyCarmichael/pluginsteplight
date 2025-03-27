@@ -18,16 +18,13 @@ HEADERS += \
     step/stl_stepfilterbyratio.h \
     step/stl_stepfiltergrid3d.h \
     step/stl_stepfiltergrid3dbyvalue.h \
-    stl_abstractvisitorgrid3d.h \
     stl_grid3d.h \
     stl_grid3d.hpp \
     stl_grid3dbeamvisitor.h \
     stl_pluginentry.h \
     stl_steppluginmanager.h \
     stl_visitorgrid3dfastfilter.h \
-    stl_visitorgrid3dfastfilter.hpp \
-    stl_visitorgrid3dsetvalue.h \
-    stl_visitorgrid3dsetvalue.hpp
+    stl_visitorgrid3dsetvalue.h
 
 
 SOURCES += \
@@ -36,7 +33,6 @@ SOURCES += \
     step/stl_stepfilterbyratio.cpp \
     step/stl_stepfiltergrid3d.cpp \
     step/stl_stepfiltergrid3dbyvalue.cpp \
-    stl_abstractvisitorgrid3d.cpp \
     stl_grid3d.cpp \
     stl_grid3dbeamvisitor.cpp \
     stl_pluginentry.cpp \
