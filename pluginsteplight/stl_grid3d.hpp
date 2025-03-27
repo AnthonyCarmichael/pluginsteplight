@@ -189,8 +189,6 @@ STL_Grid3D<DataT>* STL_Grid3D<DataT>::get_filtered_grid3d_using_fast_filter(doub
     CT_Grid3DWooTraversalAlgorithm traversal_algo_accumulate( grid3d, true, filter_visitors_list );
     CT_Grid3DWooTraversalAlgorithm traversal_algo_set_zero( filtered_grid3d, false, set_value_visitors_list );
 
-    delete grid3d;
-
     // -----------------------------------------------------------------------------------------------------------------
     // Loop through all points and normals of the input point cloud and start raytracing inside 3D grid
     size_t i_point = 0;
@@ -222,12 +220,15 @@ STL_Grid3D<DataT>* STL_Grid3D<DataT>::get_filtered_grid3d_using_fast_filter(doub
             CT_Beam beam_01( currentPoint, currentNormal );
             CT_Beam beam_02( currentPoint, -currentNormal );
 
+            Eigen::Vector3d* endPoint1 = new Eigen::Vector3d(currentPoint + currentNormal);
+            Eigen::Vector3d* endPoint2 = new Eigen::Vector3d(currentPoint - currentNormal);
+
             filter_visitor->setSumOfVisitedVotes( 0 );
-            traversal_algo_accumulate.compute(beam_01);
+            traversal_algo_accumulate.compute(beam_01,endPoint1);
             int n_votes_beam_01 = filter_visitor->sumOfVisitedVotes();
 
             filter_visitor->setSumOfVisitedVotes( 0 );
-            traversal_algo_accumulate.compute(beam_02);
+            traversal_algo_accumulate.compute(beam_02,endPoint2);
             int n_votes_beam_02 = filter_visitor->sumOfVisitedVotes();
 
             bool  beam_01_is_max = n_votes_beam_01 > n_votes_beam_02;
@@ -251,11 +252,15 @@ STL_Grid3D<DataT>* STL_Grid3D<DataT>::get_filtered_grid3d_using_fast_filter(doub
                 // Filtre direction de beam 01
                 traversal_algo_set_zero.compute(beam_01);
             }
+
+            delete endPoint1;
+            delete endPoint2;
         }
     }
 
     delete filter_visitor;
     delete set_value_visitor;
+    delete grid3d;
 
     filtered_grid3d->computeMinMax();
 
