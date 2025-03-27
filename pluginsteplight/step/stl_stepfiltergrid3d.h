@@ -31,7 +31,8 @@ protected:
     CT_HandleInSingularItem<STL_Grid3D<int>>    _in_grid3d;
     CT_HandleOutSingularItem<STL_Grid3D<int>>   _out_grid3d;
 
-    double                                      _ratio_thresh;
+    // double                                      _ratio_thresh;
+    int                                         _neighbours;
 };
 
 #endif // STL_STEPFILTERGRID3D_H

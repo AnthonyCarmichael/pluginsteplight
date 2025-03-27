@@ -106,7 +106,7 @@ public:
     inline double getResolutionsGrid() const { return _res; }
 
 
-    STL_Grid3D<DataT>* get_filtered_grid_using_ratio_thresh(double ratio_thresh,
+    STL_Grid3D<DataT>* get_filtered_grid_by_neigbhours(int neighbours,
                                                             CT_AbstractStep* step_ptr = nullptr) const;
 
     STL_Grid3D<DataT>* get_filtered_grid_using_fixed_threshold(DataT fixed_threshold,
