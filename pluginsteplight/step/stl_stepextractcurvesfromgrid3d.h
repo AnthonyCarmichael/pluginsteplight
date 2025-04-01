@@ -41,30 +41,30 @@ protected:
 
 private:
     // Step parameters
-    int       _nIterMaxOptim;                       /*!<  */
-    double    _treeHeightMaximum;                   /*!<  */
-    double    _growCoeff;                           /*!<  */
-    double    _timeStep;                            /*!<  */
-    double    _alpha;                               /*!   */
-    double    _beta;                                /*!   */
-    double    _gama;                                /*!   */
-    int       _minValueForGrid3DMaxima;             /*!<  */
-    int       _grid3DMaximaNeighbourhoodSize;       /*!<  */
-    double    _angleConeRecherche;                  /*!<  */
-    int       _tailleConeRecherche;                 /*!<  */
-    double    _tailleConeRechercheCm;               /*!<  */
-    double    _seuilSigmaL1;                        /*!<  */
-    double    _seuilSigmaL4;                        /*!<  */
-    double    _threshGradMove;                      /*!<  */
-    double    _threshGradLength;                    /*!<  */
-    double    _longueurMin;                         /*!<  */
-    double    _minHeightForMaximumSearch;           /*!<  */
-    double    _maxHeightForMaximumSearch;           /*!<  */
-    int       _minValueForMaximumSearch;            /*!<  */
-    double    _movementThresh;                      /*!<  */
-    bool      _forkSearchActive;                    /*!<  */
-    int       _nForkLevels;                         /*!<  */
-    int       _nSnakesMax;
+    // int       _nIterMaxOptim;                       /*!<  */
+    // double    _treeHeightMaximum;                   /*!<  */
+    // double    _growCoeff;                           /*!<  */
+    // double    _timeStep;                            /*!<  */
+    // double    _alpha;                               /*!   */
+    // double    _beta;                                /*!   */
+    // double    _gama;                                /*!   */
+    // int       _minValueForGrid3DMaxima;             /*!<  */
+    // int       _grid3DMaximaNeighbourhoodSize;       /*!<  */
+    // double    _angleConeRecherche;                  /*!<  */
+    // int       _tailleConeRecherche;                 /*!<  */
+    // double    _tailleConeRechercheCm;               /*!<  */
+    // double    _seuilSigmaL1;                        /*!<  */
+    // double    _seuilSigmaL4;                        /*!<  */
+    // double    _threshGradMove;                      /*!<  */
+    // double    _threshGradLength;                    /*!<  */
+    // double    _longueurMin;                         /*!<  */
+    // double    _minHeightForMaximumSearch;           /*!<  */
+    // double    _maxHeightForMaximumSearch;           /*!<  */
+    // int       _minValueForMaximumSearch;            /*!<  */
+    // double    _movementThresh;                      /*!<  */
+    // bool      _forkSearchActive;                    /*!<  */
+    // int       _nForkLevels;                         /*!<  */
+    // int       _nSnakesMax;
 
 };
 

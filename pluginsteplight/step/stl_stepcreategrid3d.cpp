@@ -44,6 +44,7 @@ void STL_STEPCreateGrid3D::declareOutputModels(CT_StepOutModelStructureManager& 
 {
     manager.addResultCopy(_inResult);
     manager.addItem(_inGroup, _outSTLGrid3D, tr("Computed STL 3D Grid"));
+    manager.addItem(_inGroup, _outSTLGridRayLength, tr("Ray length for each cells"));
 }
 
 void STL_STEPCreateGrid3D::fillPostInputConfigurationDialog(CT_StepConfigurableDialog* postInputConfigDialog)
@@ -101,14 +102,26 @@ void STL_STEPCreateGrid3D::compute()
         const size_t pointsPerThread = n_points / numThreads;
 
         // Vecteur de résultat d'opération asynch. Permets de récupérer les grilles générées par chacun des threads.
-        std::vector<std::future<STL_Grid3D<int>*>> futures;
+        struct result {
+            STL_Grid3D<int>* _grid_3d;
+            STL_Grid3D<float>* _grid_ray_length;
+        };
+
+        std::vector<std::future<result>> futures;
+
         for (unsigned int i = 0; i < numThreads; ++i) {
-            futures.push_back(std::async(std::launch::async, [this,&i_point,n_points, pointsPerThread, i, inPointCloud, inNormalCloud, bbox_bot, bbox_top]() mutable -> STL_Grid3D<int>* {
+            futures.push_back(std::async(std::launch::async, [this,&i_point,n_points, pointsPerThread, i, inPointCloud, inNormalCloud, bbox_bot, bbox_top]() mutable -> result {
                 STL_Grid3D<int>* grid_3d = STL_Grid3D<int>::createGrid3DFromXYZCoords(bbox_bot[0],bbox_bot[1],bbox_bot[2],
                                                                                       bbox_top[0],bbox_top[1],bbox_top[2],
                                                                                       _grid_resolution,
                                                                                       std::numeric_limits<int>::max(),
                                                                                       0);
+                STL_Grid3D<float>* grid_ray_length = STL_Grid3D<float>::createGrid3DFromXYZCoords(bbox_bot[0],bbox_bot[1],bbox_bot[2],
+                                                                                                bbox_top[0],bbox_top[1],bbox_top[2],
+                                                                                                _grid_resolution,
+                                                                                                std::numeric_limits<float>::max(),
+                                                                                                0);
+
                 STL_Grid3DBeamVisitor*  visitor =  new STL_Grid3DBeamVisitor(grid_3d);
                 QList<CT_AbstractGrid3DBeamVisitor*> visitorArr;
                 visitorArr.push_back(visitor);
@@ -141,11 +154,23 @@ void STL_STEPCreateGrid3D::compute()
                     if( normalLenght != 0.0 )
                     {
                         currentNormal /= normalLenght;
+
                         CT_Beam beam_01(currentPoint, currentNormal);
                         CT_Beam beam_02(currentPoint, -currentNormal);
 
                         Eigen::Vector3d* endPoint1 = new Eigen::Vector3d(currentPoint + currentNormal);
                         Eigen::Vector3d* endPoint2 = new Eigen::Vector3d(currentPoint - currentNormal);
+
+                        // Trouver la distance avec le centre du voxel
+                        Eigen::Vector3d voxelCenter;
+                        grid_3d->getCellCenterCoordinates(i,voxelCenter);
+
+                        // Calculer la direction du rayon par rapport au centre du voxel
+                        Eigen::Vector3d rayToVoxel = voxelCenter - currentPoint;
+                        float rayLength = rayToVoxel.norm();
+
+                        // Ajouter la distance dans une grille
+                        grid_ray_length->addValueAtIndex(i,grid_ray_length->valueAtIndex(i)+rayLength);
 
                         woo.compute(beam_01, endPoint1);
                         woo.compute(beam_02, endPoint2);
@@ -156,19 +181,33 @@ void STL_STEPCreateGrid3D::compute()
                 }
 
                 delete visitor;
-                return grid_3d;
+
+                return result{grid_3d,grid_ray_length};
             }));
         }
 
+
         STL_Grid3D<int>* grid_3d = nullptr;
+        STL_Grid3D<float>* grid_ray = nullptr;
         for (auto &t : futures) {
-            STL_Grid3D<int>* grid = t.get();
+            result result = t.get();
+            STL_Grid3D<int>* grid = result._grid_3d;
 
             if (grid_3d) {
                 *grid_3d += *grid;
                 delete grid;
             } else {
                 grid_3d = grid;
+            }
+
+            // On refait la même chose pour les grilles de rayons
+            STL_Grid3D<float>* g_ray = result._grid_ray_length;
+
+            if (grid_ray) {
+                *grid_ray += *g_ray;
+                delete g_ray;
+            } else {
+                grid_ray = g_ray;
             }
         }
 
@@ -182,6 +221,7 @@ void STL_STEPCreateGrid3D::compute()
         // -----------------------------------------------------------------------------------------------------------------
         // Add computed Hough space to the step's output(s)
         group->addSingularItem(_outSTLGrid3D, grid_3d);
+        group->addSingularItem(_outSTLGrid3D, grid_ray);
     }
 
     setProgress(100);
