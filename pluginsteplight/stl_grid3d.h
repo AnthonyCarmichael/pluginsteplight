@@ -288,6 +288,7 @@ public:
 
     void setPointCloudPtr(PointCloudConstPtr point_cloud_const_ptr, NormalCloudConstPtr normal_cloud_const_ptr);
     void setGridRayLength(CT_Grid3D<float> *gridRayLenght);
+    void setRealRayValueDivadedByVisit();
 
 protected:
     // -------------------------------------------------------

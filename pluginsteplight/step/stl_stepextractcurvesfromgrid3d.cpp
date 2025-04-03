@@ -117,7 +117,16 @@ void STL_StepExtractCurvesFromGrid3D::compute()
 {
     setProgress(0);
 
-    PS_LOG->addInfoMessage(LogInterface::info, tr("STL_StepExtractCurvesFromGrid3D DONE"));
+
+    for (CT_StandardItemGroup* group : _inGroup.iterateOutputs(_inResult))
+    {
+        if( isStopped() )
+        {
+            return;
+        }
+        const STL_Grid3D<int>* in_Grid3D = group->singularItem(_grid3D);
+
+    }
 
     setProgress(100);
 }
