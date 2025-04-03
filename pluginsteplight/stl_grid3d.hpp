@@ -495,4 +495,9 @@ void STL_Grid3D<DataT>::setPointCloudPtr(PointCloudConstPtr point_cloud_const_pt
     _normal_cloud_const_ptr = normal_cloud_const_ptr;
 }
 
+template< class DataT >
+void STL_Grid3D<DataT>::setGridRayLength(CT_Grid3D<float> *gridRayLenght){
+    _gridRayLength = gridRayLenght;
+}
+
 #endif // STL_GRID3D_HPP

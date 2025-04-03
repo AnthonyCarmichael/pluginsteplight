@@ -44,7 +44,7 @@ void STL_STEPCreateGrid3D::declareOutputModels(CT_StepOutModelStructureManager& 
 {
     manager.addResultCopy(_inResult);
     manager.addItem(_inGroup, _outSTLGrid3D, tr("Computed STL 3D Grid"));
-    manager.addItem(_inGroup, _outSTLGridRayLength, tr("Ray length for each cells"));
+    //manager.addItem(_inGroup, _outSTLGridRayLength, tr("Ray length for each cells"));
 }
 
 void STL_STEPCreateGrid3D::fillPostInputConfigurationDialog(CT_StepConfigurableDialog* postInputConfigDialog)
@@ -102,15 +102,15 @@ void STL_STEPCreateGrid3D::compute()
         const size_t pointsPerThread = n_points / numThreads;
 
         // Vecteur de résultat d'opération asynch. Permets de récupérer les grilles générées par chacun des threads.
-        struct result {
+        struct Result {
             STL_Grid3D<int>* _grid_3d;
             STL_Grid3D<float>* _grid_ray_length;
         };
 
-        std::vector<std::future<result>> futures;
+        std::vector<std::future<Result>> futures;
 
         for (unsigned int i = 0; i < numThreads; ++i) {
-            futures.push_back(std::async(std::launch::async, [this,&i_point,n_points, pointsPerThread, i, inPointCloud, inNormalCloud, bbox_bot, bbox_top]() mutable -> result {
+            futures.push_back(std::async(std::launch::async, [this,&i_point,n_points, pointsPerThread, i, inPointCloud, inNormalCloud, bbox_bot, bbox_top]() mutable -> Result {
                 STL_Grid3D<int>* grid_3d = STL_Grid3D<int>::createGrid3DFromXYZCoords(bbox_bot[0],bbox_bot[1],bbox_bot[2],
                                                                                       bbox_top[0],bbox_top[1],bbox_top[2],
                                                                                       _grid_resolution,
@@ -166,8 +166,9 @@ void STL_STEPCreateGrid3D::compute()
                         grid_3d->getCellCenterCoordinates(i,voxelCenter);
 
                         // Calculer la direction du rayon par rapport au centre du voxel
-                        Eigen::Vector3d rayToVoxel = voxelCenter - currentPoint;
-                        float rayLength = rayToVoxel.norm();
+                        //Eigen::Vector3d rayToVoxel = voxelCenter - currentPoint;
+
+                        float rayLength = sqrt(pow(voxelCenter.x() - currentPoint.x(),2)+ pow(voxelCenter.y() - currentPoint.y(),2)+pow(voxelCenter.z() - currentPoint.z(),2));
 
                         // Ajouter la distance dans une grille
                         grid_ray_length->addValueAtIndex(i,grid_ray_length->valueAtIndex(i)+rayLength);
@@ -182,7 +183,7 @@ void STL_STEPCreateGrid3D::compute()
 
                 delete visitor;
 
-                return result{grid_3d,grid_ray_length};
+                return Result{grid_3d,grid_ray_length};
             }));
         }
 
@@ -190,7 +191,7 @@ void STL_STEPCreateGrid3D::compute()
         STL_Grid3D<int>* grid_3d = nullptr;
         STL_Grid3D<float>* grid_ray = nullptr;
         for (auto &t : futures) {
-            result result = t.get();
+            Result result = t.get();
             STL_Grid3D<int>* grid = result._grid_3d;
 
             if (grid_3d) {
@@ -212,6 +213,8 @@ void STL_STEPCreateGrid3D::compute()
         }
 
         grid_3d->setPointCloudPtr(inPointCloud,inNormalCloud);
+        grid_3d->setGridRayLength(grid_ray);
+        //grid_ray->setPointCloudPtr(inPointCloud,inNormalCloud);
 
         grid_3d->computeMinMax();
 
@@ -221,7 +224,7 @@ void STL_STEPCreateGrid3D::compute()
         // -----------------------------------------------------------------------------------------------------------------
         // Add computed Hough space to the step's output(s)
         group->addSingularItem(_outSTLGrid3D, grid_3d);
-        group->addSingularItem(_outSTLGrid3D, grid_ray);
+        //group->addSingularItem(_outSTLGridRayLength, grid_ray);
     }
 
     setProgress(100);

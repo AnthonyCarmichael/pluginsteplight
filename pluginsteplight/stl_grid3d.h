@@ -287,6 +287,7 @@ public:
     STL_Grid3D<DataT>& operator+=(const STL_Grid3D<DataT>& other);
 
     void setPointCloudPtr(PointCloudConstPtr point_cloud_const_ptr, NormalCloudConstPtr normal_cloud_const_ptr);
+    void setGridRayLength(CT_Grid3D<float> *gridRayLenght);
 
 protected:
     // -------------------------------------------------------
@@ -309,6 +310,8 @@ protected:
 
     PointCloudConstPtr  _point_cloud_const_ptr;
     NormalCloudConstPtr _normal_cloud_const_ptr;
+
+    CT_Grid3D<float> *_gridRayLength;
 };
 
 #include "stl_grid3d.hpp"
