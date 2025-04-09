@@ -174,11 +174,11 @@ void STL_StepExtractCurvesFromGrid3D::compute()
                                                 20 );
 
                 // Start growing a new snake
-                //curr_snake->grow(nIterMaxGrow,
-                //                  _growCoeff,
-                //                  _angleConeRecherche,
-                //                  _tailleConeRecherche,
-                //                  _seuilSigmaL1);
+                curr_snake->grow(nIterMaxGrow,
+                                 _growCoeff,
+                                 _angleConeRecherche,
+                                 _tailleConeRecherche,
+                                 _seuilSigmaL1);
 
                 // If the snake is long enough
                 if( curr_snake->length3D() > _longueurMin )

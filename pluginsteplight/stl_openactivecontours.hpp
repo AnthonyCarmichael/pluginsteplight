@@ -596,8 +596,8 @@ Eigen::Vector3d STL_OpenActiveContours< DataT >::getGradientEnergyGrowProportion
                                                                                           bool& outHasGrown ) const
 {
     // Calcule la bbox correspondant a un cube centre autour de l'extremite du snake et de taille coneSizePix
-    Eigen::Vector3i coneBBoxBot = snakeExtremityPix - Eigen::Vector3i( 5, coneSizePixels, coneSizePixels, coneSizePixels);
-    Eigen::Vector3i coneBBoxTop = snakeExtremityPix + Eigen::Vector3i( 5, coneSizePixels, coneSizePixels, coneSizePixels);
+    Eigen::Vector3i coneBBoxBot = snakeExtremityPix - Eigen::Vector3i( coneSizePixels, coneSizePixels, coneSizePixels);
+    Eigen::Vector3i coneBBoxTop = snakeExtremityPix + Eigen::Vector3i( coneSizePixels, coneSizePixels, coneSizePixels);
     Eigen::Vector3i grid_dim = _grid3d->dim();
 
     for( int axe = 0 ; axe < 3 ; axe++ )
