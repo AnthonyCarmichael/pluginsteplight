@@ -329,6 +329,7 @@ void STL_Grid3D<DataT>::get_local_maximas_within_height_range(float zmin, float 
     get_local_maximas_in_bbox(bot, top, nei_size, out_local_maximas, sort_descending_order);
 }
 
+// À revoir!
 template< class DataT >
 void STL_Grid3D<DataT>::get_local_maximas_in_bbox(const Vec3i& bot, const Vec3i& top, int nei_size,
                                                      std::vector<Vec3i>& out_local_maximas,

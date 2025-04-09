@@ -281,6 +281,15 @@ public:
         }
     }
 
+    Eigen::Vector3d getBot() const {
+       return _bot;
+    }
+
+    Eigen::Vector3d getTop() const {
+        return _top;
+    }
+
+
     friend STL_Grid3D<DataT> operator+(const STL_Grid3D<DataT>& leftGrid,const STL_Grid3D<DataT>& rightGrid );
 
 
