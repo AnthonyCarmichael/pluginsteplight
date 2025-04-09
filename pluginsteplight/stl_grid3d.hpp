@@ -236,8 +236,8 @@ STL_Grid3D<DataT>* STL_Grid3D<DataT>::get_filtered_grid3d_using_fast_filter(doub
             CT_Beam beam_01( currentPoint, currentNormal );
             CT_Beam beam_02( currentPoint, -currentNormal );
 
-            Eigen::Vector3d* endPoint1 = new Eigen::Vector3d(currentPoint + currentNormal);
-            Eigen::Vector3d* endPoint2 = new Eigen::Vector3d(currentPoint - currentNormal);
+            Eigen::Vector3d* endPoint1 = new Eigen::Vector3d(currentPoint + currentNormal * 1.5);
+            Eigen::Vector3d* endPoint2 = new Eigen::Vector3d(currentPoint - currentNormal * 1.5);
 
             filter_visitor->setSumOfVisitedVotes( 0 );
             traversal_algo_accumulate.compute(beam_01,endPoint1);

@@ -44,7 +44,7 @@ void STL_STEPCreateGrid3D::declareOutputModels(CT_StepOutModelStructureManager& 
 {
     manager.addResultCopy(_inResult);
     manager.addItem(_inGroup, _outSTLGrid3D, tr("Computed STL 3D Grid"));
-    //manager.addItem(_inGroup, _outSTLGridRayLength, tr("Ray length for each cells"));
+    manager.addItem(_inGroup, _outSTLGridRayLength, tr("Ray length for each cells"));
 }
 
 void STL_STEPCreateGrid3D::fillPostInputConfigurationDialog(CT_StepConfigurableDialog* postInputConfigDialog)
@@ -158,8 +158,8 @@ void STL_STEPCreateGrid3D::compute()
                         CT_Beam beam_01(currentPoint, currentNormal);
                         CT_Beam beam_02(currentPoint, -currentNormal);
 
-                        Eigen::Vector3d* endPoint1 = new Eigen::Vector3d(currentPoint + currentNormal);
-                        Eigen::Vector3d* endPoint2 = new Eigen::Vector3d(currentPoint - currentNormal);
+                        Eigen::Vector3d* endPoint1 = new Eigen::Vector3d(currentPoint + currentNormal * 1.5);
+                        Eigen::Vector3d* endPoint2 = new Eigen::Vector3d(currentPoint - currentNormal * 1.5);
 
                         // Trouver la distance avec le centre du voxel
                         Eigen::Vector3d voxelCenter;
@@ -217,6 +217,7 @@ void STL_STEPCreateGrid3D::compute()
         //grid_ray->setPointCloudPtr(inPointCloud,inNormalCloud);
 
         grid_3d->computeMinMax();
+        grid_ray->computeMinMax();
 
         PS_LOG->addInfoMessage(LogInterface::error, tr("Min value %1").arg(grid_3d->dataMin()));
         PS_LOG->addInfoMessage(LogInterface::error, tr("Max value %1").arg(grid_3d->dataMax()));
@@ -224,7 +225,7 @@ void STL_STEPCreateGrid3D::compute()
         // -----------------------------------------------------------------------------------------------------------------
         // Add computed Hough space to the step's output(s)
         group->addSingularItem(_outSTLGrid3D, grid_3d);
-        //group->addSingularItem(_outSTLGridRayLength, grid_ray);
+        group->addSingularItem(_outSTLGridRayLength, grid_ray);
     }
 
     setProgress(100);

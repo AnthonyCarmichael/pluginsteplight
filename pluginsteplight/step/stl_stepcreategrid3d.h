@@ -32,7 +32,7 @@ protected:
     CT_HandleInSingularItem<CT_AbstractItemDrawableWithPointCloud>  _in_point_cloud;
     CT_HandleInSingularItem<CT_PointsAttributesNormal>              _in_normal_cloud;
     CT_HandleOutSingularItem<STL_Grid3D<int>>                        _outSTLGrid3D;
-    //CT_HandleOutSingularItem<STL_Grid3D<float>>                        _outSTLGridRayLength;
+    CT_HandleOutSingularItem<STL_Grid3D<float>>                        _outSTLGridRayLength;
 
     double _grid_resolution;
 };
