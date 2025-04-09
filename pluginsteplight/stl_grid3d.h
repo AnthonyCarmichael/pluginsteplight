@@ -186,40 +186,40 @@ public:
 
     inline int cartesianToPixelX( double x ) const
     {
-        if( x == _top[1] )
+        if( x == _top[0] )
         {
             return _dimx - 1;
         }
 
         else
         {
-            return floor( ( x - _bot[1] ) / _res );
+            return floor( ( x - _bot[0] ) / _res );
         }
     }
 
     inline int cartesianToPixelY( double y ) const
     {
-        if( y == _top[2] )
+        if( y == _top[1] )
         {
             return _dimy - 1;
         }
 
         else
         {
-            return floor( ( y - _bot[2] ) / _res );
+            return floor( ( y - _bot[1] ) / _res );
         }
     }
 
     inline int cartesianToPixelZ( double z ) const
     {
-        if( z == _top[3] )
+        if( z == _top[2] )
         {
             return _dimz - 1;
         }
 
         else
         {
-            return floor( ( z - _bot[3] ) / _res );
+            return floor( ( z - _bot[2] ) / _res );
         }
     }
 

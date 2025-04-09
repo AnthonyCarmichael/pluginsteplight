@@ -1246,9 +1246,9 @@ void uncenteredPCA(const std::vector< std::pair< Eigen::Vector3d, DataT> >& dir_
     out_l2 = eigenValues[1];
     out_l3 = eigenValues[2];
 
-    out_v1 << eigenVectors(0,0), eigenVectors(1,0), eigenVectors(2,0), eigenVectors(3,0);
-    out_v2 << eigenVectors(0,1), eigenVectors(1,1), eigenVectors(2,1), eigenVectors(3,1);
-    out_v3 << eigenVectors(0,2), eigenVectors(1,2), eigenVectors(2,2), eigenVectors(3,2);
+    out_v1 << eigenVectors(0,0), eigenVectors(1,0), eigenVectors(2,0);
+    out_v2 << eigenVectors(0,1), eigenVectors(1,1), eigenVectors(2,1);
+    out_v3 << eigenVectors(0,2), eigenVectors(1,2), eigenVectors(2,2);
 }
 
 #endif // STL_OPENACTIVECONTOURS_HPP

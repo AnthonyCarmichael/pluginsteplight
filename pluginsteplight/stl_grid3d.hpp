@@ -365,32 +365,52 @@ void STL_Grid3D<DataT>::get_local_maximas_in_bbox(const Vec3i& bot, const Vec3i&
         }
     }
 
-    auto pixel_it = _data.begin();
-    auto pixel_it_end = _data.end();
 
-    //cv::SparseMatConstIterator_<DataT> pixel_it = _data.begin();
-    //cv::SparseMatConstIterator_<DataT> pixel_it_end = _data.end();
+    for(int x=0;x<_dimx;x++){
+        for(int y =0;y<_dimy;y++){
+            for(int z =0;z<_dimz;z++){
+                DataT curr_val = value(x,y,z);
+                if( curr_val > 0 )
+                {
+                    Vec3i pix( x, y, z);
 
-
-    for( ; pixel_it != pixel_it_end ; ++pixel_it )
-    {
-        //cv::SparseMat::Node* curr_pixel_node = pixel_it.node();
-        //DataT curr_val = pixel_it.template value<DataT>();
-
-        if( *pixel_it > 0 )
-        {
-            // Vérifier comment avoir le x,y,z du point
-            // Vec3i pix( pixel_it->idx[0], curr_pixel_node->idx[1], curr_pixel_node->idx[2]);
-
-            // if( is_pixel_in_bbox(pix, bot_bbox, top_bbox) )
-            // {
-            //     if( is_pixel_local_maxima( pix, nei_size ) )
-            //     {
-            //         out_local_maximas.push_back( pix );
-            //     }
-            // }
+                    if( is_pixel_in_bbox(pix, bot_bbox, top_bbox) )
+                    {
+                        if( is_pixel_local_maxima( pix, nei_size ) )
+                        {
+                            out_local_maximas.push_back( pix );
+                        }
+                    }
+                }
+            }
         }
     }
+
+    // const_iterator pixel_it = _data.begin();
+    // const_iterator pixel_it_end = _data.end();
+
+    // // cv::MatConstIterator_<DataT> pixel_it = _data.begin();
+    // // cv::MatConstIterator_<DataT> pixel_it_end = _data.end();
+
+
+    // for( ; pixel_it != pixel_it_end ; ++pixel_it )
+    // {
+    //     //cv::SparseMat::Node* curr_pixel_node = pixel_it.node();
+    //     DataT curr_val = *pixel_it;
+
+    //     if( *pixel_it > 0 )
+    //     {
+    //         Vec3i pix( pixel_it->idx[0], curr_pixel_node->idx[1], curr_pixel_node->idx[2]);
+
+    //         if( is_pixel_in_bbox(pix, bot_bbox, top_bbox) )
+    //         {
+    //             if( is_pixel_local_maxima( pix, nei_size ) )
+    //             {
+    //                 out_local_maximas.push_back( pix );
+    //             }
+    //         }
+    //     }
+    // }
 
     if( sort_descending_order )
     {
@@ -410,7 +430,7 @@ bool STL_Grid3D<DataT>::is_pixel_local_maxima( const Vec3i& pix, int nei_size ) 
     DataT curr_value = value( pix );
     Vec3i nei;
     Vec3i dimensions = dim();
-    Vec3i size ( nei_size, nei_size, nei_size, nei_size );
+    Vec3i size ( nei_size, nei_size, nei_size );
     Vec3i bot = pix - size;
     Vec3i top = pix + size;
 
