@@ -264,7 +264,7 @@ public:
                 {
                     if( isPixelIn(nei) )
                     {
-                        neiValue = valueHough(nei[0], nei[1], nei[2]);
+                        neiValue = value(nei[0], nei[1], nei[2]);
 
                         if ( neiValue < outMin )
                         {

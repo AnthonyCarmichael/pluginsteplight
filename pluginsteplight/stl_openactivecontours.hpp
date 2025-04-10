@@ -217,20 +217,20 @@ std::vector< CT_Circle* > STL_OpenActiveContours<DataT>::get_raw_circles() const
 {
     std::vector< CT_Circle* > rslt;
 
-    append_raw_circles_to_vector( rslt );
+    //append_raw_circles_to_vector(rslt,_grid3d->getGridRayLength()->value(_points.x(),_points.y(),_points.z()));
 
     return rslt;
 }
 
 template< class DataT >
-void STL_OpenActiveContours<DataT>::append_raw_circles_to_vector( std::vector< CT_Circle* >& in_out_circle_vector ) const
+void STL_OpenActiveContours<DataT>::append_raw_circles_to_vector( std::vector< CT_Circle* >& in_out_circle_vector, const float radius ) const
 {
     int n_points = get_n_points();
 
     for( int i = 0 ; i < n_points ; i++ )
     {
         const Eigen::Vector3d& point = _points.row(i);
-        in_out_circle_vector.push_back( new CT_Circle( new CT_CircleData(point.tail(3), Eigen::Vector3d::UnitZ(), point[0]) ) );
+        in_out_circle_vector.push_back( new CT_Circle( new CT_CircleData(point.tail(3), Eigen::Vector3d::UnitZ(), radius) ) );
     }
 }
 

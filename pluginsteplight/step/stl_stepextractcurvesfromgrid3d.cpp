@@ -187,14 +187,14 @@ void STL_StepExtractCurvesFromGrid3D::compute()
                     curr_snake->resample(0.1);
 
                     // Mark new snake as repulsive in repulsive image
-                    //curr_snake->markRepulsion(1.5);
+                    curr_snake->markRepulsion(1.5);
 
                     // On relache le contour actif pour optimiser l'energie
-                   /* curr_snake->relax(_nIterMaxOptim,
+                    curr_snake->relax(_nIterMaxOptim,
                                       _alpha, _beta, _gama,
                                       1.0,
                                       _timeStep,
-                                      _threshGradMove );*/ // Equivalent de 1 millimetre par defaut
+                                      _threshGradMove ); // Equivalent de 1 millimetre par defaut
 
                     // Add snake to the global set of snakes
                     snakes.push_back(curr_snake);
@@ -206,28 +206,24 @@ void STL_StepExtractCurvesFromGrid3D::compute()
             }
         }
 
-
-
-
-
         // Transform snakes to circles and free allocated memory
-        // for( const SnakePtr snake_ptr : snakes )
-        // {
-        //     CT_StandardItemGroup* outGroupSingleSnakes = new CT_StandardItemGroup();
-        //     outGroupOfSnakes->addGroup( _outGroupSingleSnake, outGroupSingleSnakes );
+        for( const STL_OpenActiveContours<int>* snake_ptr : snakes )
+        {
+            CT_StandardItemGroup* outGroupSingleSnakes = new CT_StandardItemGroup();
+            outGroupOfSnakes->addGroup( _outGroupSingleSnake, outGroupSingleSnakes );
 
-        //     // Add circles to the computree step results
-        //     std::vector< CirclePtr > raw_circles = snake_ptr->get_raw_circles();
-        //     for( const CirclePtr circle : raw_circles )
-        //     {
-        //         CT_StandardItemGroup* outGroupCircle = new CT_StandardItemGroup();
-        //         outGroupSingleSnakes->addGroup( _outGroupSingleCircle, outGroupCircle );
-        //         outGroupCircle->addSingularItem( _outCircle, circle );
-        //     }
+            // Add circles to the computree step results
+            std::vector< CirclePtr > raw_circles = snake_ptr->get_raw_circles();
+            for( const CirclePtr circle : raw_circles )
+            {
+                CT_StandardItemGroup* outGroupCircle = new CT_StandardItemGroup();
+                outGroupSingleSnakes->addGroup( _outGroupSingleCircle, outGroupCircle );
+                outGroupCircle->addSingularItem( _outCircle, circle );
+            }
 
-        //     // Free allocated memory
-        //     delete snake_ptr;
-        // }
+            // Free allocated memory
+            delete snake_ptr;
+        }
 
     }
 

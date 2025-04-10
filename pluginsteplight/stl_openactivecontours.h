@@ -25,7 +25,7 @@ public:
 
     std::vector< CT_Circle* > get_raw_circles() const;
 
-    void append_raw_circles_to_vector( std::vector< CT_Circle* >& in_out_circle_vector ) const;
+    void append_raw_circles_to_vector( std::vector< CT_Circle* >& in_out_circle_vector, const float radius ) const;
 
     inline int get_n_points() const { return _points.rows(); }
 
