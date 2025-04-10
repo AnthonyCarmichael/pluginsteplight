@@ -1,9 +1,9 @@
 #include "stl_stepcreategrid3d.h"
 #include "ct_global/ct_context.h"
-#include "ct_itemdrawable/tools/gridtools/ct_grid3dwootraversalalgorithm.h"
 #include "loginterface.h"
 #include "stl_grid3d.h"
 #include "stl_grid3dbeamvisitor.h"
+#include "stl_grid3dwootraversalalgorithm.h"
 #include <omp.h>
 #include <thread>
 #include <future>
@@ -125,7 +125,7 @@ void STL_STEPCreateGrid3D::compute()
                 STL_Grid3DBeamVisitor*  visitor =  new STL_Grid3DBeamVisitor(grid_3d);
                 QList<CT_AbstractGrid3DBeamVisitor*> visitorArr;
                 visitorArr.push_back(visitor);
-                CT_Grid3DWooTraversalAlgorithm woo(grid_3d,true,visitorArr);
+                STL_Grid3DWooTraversalAlgorithm woo(grid_3d,true,visitorArr);
 
                 size_t  beginIndex = i * pointsPerThread;
                 CT_PointIterator itPoint(inPointCloud->pointCloudIndex());

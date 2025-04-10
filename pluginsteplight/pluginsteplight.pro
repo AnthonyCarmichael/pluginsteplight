@@ -21,6 +21,7 @@ HEADERS += \
     stl_grid3d.h \
     stl_grid3d.hpp \
     stl_grid3dbeamvisitor.h \
+    stl_grid3dwootraversalalgorithm.h \
     stl_openactivecontours.h \
     stl_openactivecontours.hpp \
     stl_pluginentry.h \
@@ -37,6 +38,7 @@ SOURCES += \
     step/stl_stepfiltergrid3dbyvalue.cpp \
     stl_grid3d.cpp \
     stl_grid3dbeamvisitor.cpp \
+    stl_grid3dwootraversalalgorithm.cpp \
     stl_openactivecontours.cpp \
     stl_pluginentry.cpp \
     stl_steppluginmanager.cpp \
