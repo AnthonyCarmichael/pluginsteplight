@@ -25,7 +25,7 @@ public:
     /*!
      * \brief compute method of the algorithm
      */
-    void compute(CT_Beam &data, Eigen::Vector3d* endPoint = nullptr);
+    void compute(CT_Beam &data, Eigen::Vector3d* endPoint = nullptr, CT_Grid3D<float>* rayLengthGrid = nullptr);
 
     // Pour utilisation pas à pas, sans visitors
     bool init(CT_Beam &data, size_t returnedIndex);

@@ -162,7 +162,7 @@ STL_Grid3D<DataT>* STL_Grid3D<DataT>::get_filtered_grid_by_neigbhours(int neighb
         }
     }
 
-    filtered_grid->setRealRayValueDivadedByVisit();
+    //filtered_grid->setRealRayValueDivadedByVisit();
 
     return filtered_grid;
 }
@@ -274,7 +274,7 @@ STL_Grid3D<DataT>* STL_Grid3D<DataT>::get_filtered_grid3d_using_fast_filter(doub
         }
     }
 
-    filtered_grid3d->setRealRayValueDivadedByVisit();
+    //filtered_grid3d->setRealRayValueDivadedByVisit();
 
     delete filter_visitor;
     delete set_value_visitor;

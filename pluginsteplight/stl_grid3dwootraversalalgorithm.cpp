@@ -56,7 +56,7 @@ STL_Grid3DWooTraversalAlgorithm::STL_Grid3DWooTraversalAlgorithm(const CT_Abstra
 }
 
 
-void STL_Grid3DWooTraversalAlgorithm::compute(CT_Beam &data, Eigen::Vector3d *endPoint)
+void STL_Grid3DWooTraversalAlgorithm::compute(CT_Beam &data, Eigen::Vector3d *endPoint, CT_Grid3D<float>* rayLengthGrid)
 {
     _intersects = data.intersect(_gridBottom, _gridTop, _start, _end);
 
@@ -134,6 +134,14 @@ void STL_Grid3DWooTraversalAlgorithm::compute(CT_Beam &data, Eigen::Vector3d *en
                 for (int i = 0 ; i < _numberOfVisitors ; ++i)
                 {
                     _visitorList.at(i)->visit(index, &data);
+                    // Trouver la distance avec le centre du voxel
+                    Eigen::Vector3d voxelCenter;
+                    _calibrationGrid->getCellCenterCoordinates(index,voxelCenter);
+
+                    float rayLength = sqrt(pow(voxelCenter.x() - _start.x(),2)+ pow(voxelCenter.y() - _start.y(),2)+pow(voxelCenter.z() - _start.z(),2));
+
+                    // Ajouter la distance dans une grille
+                    rayLengthGrid->addValueAtIndex(index,rayLength);
                 }
             }
         }
@@ -173,6 +181,15 @@ void STL_Grid3DWooTraversalAlgorithm::compute(CT_Beam &data, Eigen::Vector3d *en
                 for (int i = 0 ; i < _numberOfVisitors ; ++i)
                 {
                     _visitorList.at(i)->visit(index, &data);
+
+                    // Trouver la distance avec le centre du voxel
+                    Eigen::Vector3d voxelCenter;
+                    _calibrationGrid->getCellCenterCoordinates(index,voxelCenter);
+
+                    float rayLength = sqrt(pow(voxelCenter.x() - _start.x(),2)+ pow(voxelCenter.y() - _start.y(),2)+pow(voxelCenter.z() - _start.z(),2));
+
+                    // Ajouter la distance dans une grille
+                    rayLengthGrid->addValueAtIndex(index,rayLength);
                 }
             }
 

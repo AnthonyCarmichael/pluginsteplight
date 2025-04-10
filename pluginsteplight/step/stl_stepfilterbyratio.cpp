@@ -74,9 +74,6 @@ void STL_StepFilterByRatio::compute()
         PS_LOG->addInfoMessage(LogInterface::error, tr("Min value %1").arg(filtered_grid_3d->dataMin()));
         PS_LOG->addInfoMessage(LogInterface::error, tr("Max value %1").arg(filtered_grid_3d->dataMax()));
 
-        PS_LOG->addInfoMessage(LogInterface::error, tr("Rayon min value %1").arg(filtered_grid_3d->getGridRayLength()->dataMin()));
-        PS_LOG->addInfoMessage(LogInterface::error, tr("Rayon max value %1").arg(filtered_grid_3d->getGridRayLength()->dataMax()));
-
         group->addSingularItem(_out_grid_3d, filtered_grid_3d);
     }
 

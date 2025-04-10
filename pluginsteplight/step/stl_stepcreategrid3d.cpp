@@ -161,20 +161,8 @@ void STL_STEPCreateGrid3D::compute()
                         Eigen::Vector3d* endPoint1 = new Eigen::Vector3d(currentPoint + currentNormal * 1.5);
                         Eigen::Vector3d* endPoint2 = new Eigen::Vector3d(currentPoint - currentNormal * 1.5);
 
-                        // Trouver la distance avec le centre du voxel
-                        Eigen::Vector3d voxelCenter;
-                        grid_3d->getCellCenterCoordinates(i,voxelCenter);
-
-                        // Calculer la direction du rayon par rapport au centre du voxel
-                        //Eigen::Vector3d rayToVoxel = voxelCenter - currentPoint;
-
-                        float rayLength = sqrt(pow(voxelCenter.x() - currentPoint.x(),2)+ pow(voxelCenter.y() - currentPoint.y(),2)+pow(voxelCenter.z() - currentPoint.z(),2));
-
-                        // Ajouter la distance dans une grille
-                        grid_ray_length->addValueAtIndex(i,rayLength);
-
-                        woo.compute(beam_01, endPoint1);
-                        woo.compute(beam_02, endPoint2);
+                        woo.compute(beam_01, endPoint1,grid_ray_length);
+                        woo.compute(beam_02, endPoint2,grid_ray_length);
 
                         delete endPoint1;
                         delete endPoint2;
@@ -214,17 +202,17 @@ void STL_STEPCreateGrid3D::compute()
 
         grid_3d->setPointCloudPtr(inPointCloud,inNormalCloud);
         grid_3d->setGridRayLength(grid_ray);
-        // grid_3d->setRealRayValueDivadedByVisit();
+        grid_3d->setRealRayValueDivadedByVisit();
 
         grid_3d->computeMinMax();
-        // grid_3d->getGridRayLength()->computeMinMax();
+        grid_3d->getGridRayLength()->computeMinMax();
 
         PS_LOG->addInfoMessage(LogInterface::error, tr("Min value %1").arg(grid_3d->dataMin()));
         PS_LOG->addInfoMessage(LogInterface::error, tr("Max value %1").arg(grid_3d->dataMax()));
 
 
-        // PS_LOG->addInfoMessage(LogInterface::error, tr("Rayon min value %1").arg(grid_3d->getGridRayLength()->dataMin()));
-        // PS_LOG->addInfoMessage(LogInterface::error, tr("Rayon max value %1").arg(grid_3d->getGridRayLength()->dataMax()));
+        PS_LOG->addInfoMessage(LogInterface::error, tr("Rayon min value %1").arg(grid_3d->getGridRayLength()->dataMin()));
+        PS_LOG->addInfoMessage(LogInterface::error, tr("Rayon max value %1").arg(grid_3d->getGridRayLength()->dataMax()));
 
         // -----------------------------------------------------------------------------------------------------------------
         // Add computed Hough space to the step's output(s)
