@@ -289,6 +289,10 @@ public:
         return _top;
     }
 
+    CT_Grid3D<float>* getGridRayLength() const {
+        return _gridRayLength;
+    }
+
 
     friend STL_Grid3D<DataT> operator+(const STL_Grid3D<DataT>& leftGrid,const STL_Grid3D<DataT>& rightGrid );
 

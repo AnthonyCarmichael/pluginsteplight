@@ -171,7 +171,7 @@ void STL_STEPCreateGrid3D::compute()
                         float rayLength = sqrt(pow(voxelCenter.x() - currentPoint.x(),2)+ pow(voxelCenter.y() - currentPoint.y(),2)+pow(voxelCenter.z() - currentPoint.z(),2));
 
                         // Ajouter la distance dans une grille
-                        grid_ray_length->addValueAtIndex(i,grid_ray_length->valueAtIndex(i)+rayLength);
+                        grid_ray_length->addValueAtIndex(i,rayLength);
 
                         woo.compute(beam_01, endPoint1);
                         woo.compute(beam_02, endPoint2);
@@ -214,18 +214,22 @@ void STL_STEPCreateGrid3D::compute()
 
         grid_3d->setPointCloudPtr(inPointCloud,inNormalCloud);
         grid_3d->setGridRayLength(grid_ray);
-        //grid_ray->setPointCloudPtr(inPointCloud,inNormalCloud);
+        // grid_3d->setRealRayValueDivadedByVisit();
 
         grid_3d->computeMinMax();
-        grid_ray->computeMinMax();
+        // grid_3d->getGridRayLength()->computeMinMax();
 
         PS_LOG->addInfoMessage(LogInterface::error, tr("Min value %1").arg(grid_3d->dataMin()));
         PS_LOG->addInfoMessage(LogInterface::error, tr("Max value %1").arg(grid_3d->dataMax()));
 
+
+        // PS_LOG->addInfoMessage(LogInterface::error, tr("Rayon min value %1").arg(grid_3d->getGridRayLength()->dataMin()));
+        // PS_LOG->addInfoMessage(LogInterface::error, tr("Rayon max value %1").arg(grid_3d->getGridRayLength()->dataMax()));
+
         // -----------------------------------------------------------------------------------------------------------------
         // Add computed Hough space to the step's output(s)
         group->addSingularItem(_outSTLGrid3D, grid_3d);
-        group->addSingularItem(_outSTLGridRayLength, grid_ray);
+        group->addSingularItem(_outSTLGridRayLength, grid_3d->getGridRayLength());
     }
 
     setProgress(100);

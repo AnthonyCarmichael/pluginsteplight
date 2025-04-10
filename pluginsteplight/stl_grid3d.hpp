@@ -274,7 +274,6 @@ STL_Grid3D<DataT>* STL_Grid3D<DataT>::get_filtered_grid3d_using_fast_filter(doub
         }
     }
 
-    //À tester
     filtered_grid3d->setRealRayValueDivadedByVisit();
 
     delete filter_visitor;
