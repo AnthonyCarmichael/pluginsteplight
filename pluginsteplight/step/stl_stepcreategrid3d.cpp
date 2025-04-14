@@ -201,6 +201,7 @@ void STL_STEPCreateGrid3D::compute()
         }
 
         grid_3d->setPointCloudPtr(inPointCloud,inNormalCloud);
+        grid_3d->setBotTop(bbox_bot,bbox_top);
         grid_3d->setGridRayLength(grid_ray);
         grid_3d->setRealRayValueDivadedByVisit();
 

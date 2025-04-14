@@ -24,7 +24,9 @@ STL_Grid3D<DataT>::STL_Grid3D(const STL_Grid3D<DataT>& other) :
     SuperClass( other ),
     _point_cloud_const_ptr( other._point_cloud_const_ptr ),
     _normal_cloud_const_ptr( other._normal_cloud_const_ptr ),
-    _gridRayLength( other._gridRayLength)
+    _gridRayLength( other._gridRayLength),
+    _bot(other._bot),
+    _top(other._top)
 
 {
 }
@@ -525,6 +527,12 @@ void STL_Grid3D<DataT>::setPointCloudPtr(PointCloudConstPtr point_cloud_const_pt
 template< class DataT >
 void STL_Grid3D<DataT>::setGridRayLength(CT_Grid3D<float> *gridRayLenght){
     _gridRayLength = gridRayLenght;
+}
+
+template< class DataT >
+void STL_Grid3D<DataT>::setBotTop(Vec3d bot, Vec3d top){
+    _bot = bot;
+    _top = top;
 }
 
 template< class DataT >
