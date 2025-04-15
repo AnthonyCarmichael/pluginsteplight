@@ -197,6 +197,7 @@ void STL_StepExtractCurvesFromGrid3D::compute()
                                       _threshGradMove ); // Equivalent de 1 millimetre par defaut
 
                     // Add snake to the global set of snakes
+                    curr_snake->resample(0.1);
                     snakes.push_back(curr_snake);
                 }
                 else

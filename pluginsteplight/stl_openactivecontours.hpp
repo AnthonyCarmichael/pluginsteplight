@@ -189,7 +189,7 @@ void STL_OpenActiveContours<DataT>::get_dir_and_score_inside_cone(const Eigen::V
                         double angle = (180.0/M_PI) * acos( scalar_product ); // Pas besoin de diviser par la norme car potentielGrowDirPoint et tangentNormalized ont une norme de 1
                         if( angle <= cone_angle_deg )
                         {
-                            Eigen::Vector3d weighted_direction = potential_grow_dir * static_cast<double>(cur_pixel_value) * ((static_cast<double>(search_bbox_size_spatial) * _grid3d->resolution() ) - potential_grow_dir_norm_3d);
+                            Eigen::Vector3d weighted_direction = potential_grow_dir * static_cast<double>(cur_pixel_value) ;//* ((static_cast<double>(search_bbox_size_spatial) * _grid3d->resolution() ) - potential_grow_dir_norm_3d);
                             out_dir_and_scores.push_back( std::make_pair(weighted_direction, cur_pixel_value) );
                         }
                     }
