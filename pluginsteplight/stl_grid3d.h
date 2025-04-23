@@ -57,8 +57,6 @@ public:
                double res,
                DataT na,
                DataT initValue);
-
-
     /*!
      * \brief Initialisation constructor
      *
@@ -128,7 +126,6 @@ public:
                                    bool sort_descending_order) const;
 
     DataT* get_data();
-
 
     bool is_pixel_local_maxima( const Vec3i& pix, int nei_size ) const;
 
@@ -242,7 +239,6 @@ public:
                 pix[2] >= 0 && pix[2] < zdim() );
     }
 
-
     inline Vec3i dim() const
     {
         return Vec3i(_dimx, _dimy, _dimz);
@@ -293,9 +289,7 @@ public:
         return _gridRayLength;
     }
 
-
     friend STL_Grid3D<DataT> operator+(const STL_Grid3D<DataT>& leftGrid,const STL_Grid3D<DataT>& rightGrid );
-
 
     STL_Grid3D<DataT>& operator+=(const STL_Grid3D<DataT>& other);
 
