@@ -101,7 +101,7 @@ void STL_STEPCreateGrid3D::compute()
         const unsigned int numThreads = std::thread::hardware_concurrency();
         const size_t pointsPerThread = n_points / numThreads;
 
-        // Vecteur de résultat d'opération asynch. Permets de récupérer les grilles générées par chacun des threads.
+        // Vecteur de résultat d'opération asynch. Permet de récupérer les grilles générées par chacun des threads.
         struct Result {
             STL_Grid3D<int>* _grid_3d;
             STL_Grid3D<float>* _grid_ray_length;
@@ -132,7 +132,7 @@ void STL_STEPCreateGrid3D::compute()
                 itPoint.jump(beginIndex);
                 for(size_t i = beginIndex; i < (beginIndex + pointsPerThread); i++)
                 {
-                    // Gestion de la bar de progress multithread safe
+                    // Gestion de la bar (multithread safe)
                     if( i_point.fetch_add(1) % 100 == 0 )
                     {
                         setProgress(static_cast<float>(i_point) * 100.0f / static_cast<float>(n_points));
@@ -168,16 +168,14 @@ void STL_STEPCreateGrid3D::compute()
                         delete endPoint2;
                     }
                 }
-
                 delete visitor;
-
                 return Result{grid_3d,grid_ray_length};
             }));
         }
 
-
         STL_Grid3D<int>* grid_3d = nullptr;
         STL_Grid3D<float>* grid_ray = nullptr;
+
         for (auto &t : futures) {
             Result result = t.get();
             STL_Grid3D<int>* grid = result._grid_3d;
@@ -189,7 +187,7 @@ void STL_STEPCreateGrid3D::compute()
                 grid_3d = grid;
             }
 
-            // On refait la même chose pour les grilles de rayons
+            // On refait la même chose pour les grilles des rayons
             STL_Grid3D<float>* g_ray = result._grid_ray_length;
 
             if (grid_ray) {
@@ -200,17 +198,20 @@ void STL_STEPCreateGrid3D::compute()
             }
         }
 
+        // Quick fix pour corriger la perte des pointeurs du nuage de points lors du multithread
         grid_3d->setPointCloudPtr(inPointCloud,inNormalCloud);
         grid_3d->setBotTop(bbox_bot,bbox_top);
+
+        // On attribue la grille des rayons à la grille de la scene
         grid_3d->setGridRayLength(grid_ray);
         grid_3d->setRealRayValueDivadedByVisit();
 
+        // Compute MinMax pour la grille de wooTraversal et des rayons
         grid_3d->computeMinMax();
         grid_3d->getGridRayLength()->computeMinMax();
 
         PS_LOG->addInfoMessage(LogInterface::error, tr("Min value %1").arg(grid_3d->dataMin()));
         PS_LOG->addInfoMessage(LogInterface::error, tr("Max value %1").arg(grid_3d->dataMax()));
-
 
         PS_LOG->addInfoMessage(LogInterface::error, tr("Rayon min value %1").arg(grid_3d->getGridRayLength()->dataMin()));
         PS_LOG->addInfoMessage(LogInterface::error, tr("Rayon max value %1").arg(grid_3d->getGridRayLength()->dataMax()));

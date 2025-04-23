@@ -21,7 +21,6 @@ public:
 
     STL_Grid3DWooTraversalAlgorithm(const CT_AbstractGrid3D *grid, bool keepFirst); // version sans visitors (ne pas utiliser Compute)
 
-
     /*!
      * \brief compute method of the algorithm
      */

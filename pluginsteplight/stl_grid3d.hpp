@@ -112,7 +112,6 @@ STL_Grid3D<DataT>* STL_Grid3D<DataT>::createGrid3DFromXYZCoords(double xmin,
     return new STL_Grid3D<DataT>(xmin, ymin, zmin, dimx, dimy, dimz, resolution, na, initValue);
 }
 
-
 template<class DataT>
 STL_Grid3D<DataT>* STL_Grid3D<DataT>::get_filtered_grid_by_neigbhours(int neighbours, CT_AbstractStep *step_ptr) const
 {
@@ -182,6 +181,7 @@ STL_Grid3D<DataT>* STL_Grid3D<DataT>::get_filtered_grid_using_fixed_threshold(Da
 
     return filtered_grid;
 }
+
 template< class DataT >
 STL_Grid3D<DataT>* STL_Grid3D<DataT>::get_filtered_grid3d_using_fast_filter(double ratio_thresh,
                                                                               CT_AbstractStep* step_ptr) const
@@ -280,7 +280,6 @@ STL_Grid3D<DataT>* STL_Grid3D<DataT>::get_filtered_grid3d_using_fast_filter(doub
     return filtered_grid3d;
 }
 
-
 template< class DataT >
 void STL_Grid3D<DataT>::get_local_maximas(int nei_size,
                                              std::vector<Vec3i>& out_local_maximas,
@@ -323,7 +322,6 @@ void STL_Grid3D<DataT>::get_local_maximas_within_height_range(float zmin, float 
     get_local_maximas_in_bbox(bot, top, nei_size, out_local_maximas, sort_descending_order);
 }
 
-// À revoir!
 template< class DataT >
 void STL_Grid3D<DataT>::get_local_maximas_in_bbox(const Vec3i& bot, const Vec3i& top, int nei_size,
                                                      std::vector<Vec3i>& out_local_maximas,
@@ -358,7 +356,6 @@ void STL_Grid3D<DataT>::get_local_maximas_in_bbox(const Vec3i& bot, const Vec3i&
             top_bbox[axe] = grid_dim[axe] - 1;
         }
     }
-
 
     for(int x=0;x<_dimx;x++){
         for(int y =0;y<_dimy;y++){

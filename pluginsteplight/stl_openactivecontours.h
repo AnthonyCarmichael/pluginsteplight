@@ -126,9 +126,7 @@ public:
     }
 
     Eigen::Vector3d directionContoursAtPoint(int indexPoint) const;
-
     Eigen::MatrixXd* getSecondDifferentialOnTangentDividedByTangentNormMultiplyedByImageEnergy( double globalWeight ) const;
-
     Eigen::Vector3d getTangentAtPoint( int i, bool normalize ) const;
     inline Eigen::Vector3d getTangentAtHead(bool normalize) const { return getTangentAtPoint(0, normalize); }
     inline Eigen::Vector3d getTangentAtTail(bool normalize) const { return getTangentAtPoint( get_n_points() - 1, normalize ); }
@@ -146,8 +144,6 @@ public:
 
         return ( prevPoint - (2*currPoint) + nextPoint );
     }
-
-
 
 private :
     const STL_Grid3D<int>*  const _grid3d;   /*!< Un contours actif se deplace sur une image */

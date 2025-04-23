@@ -46,7 +46,6 @@ CT_VirtualAbstractStep* STL_StepExtractCurvesFromGrid3D::createNewInstance() con
     return new STL_StepExtractCurvesFromGrid3D();
 }
 
-
 //////////////////// PROTECTED METHODS //////////////////
 
 void STL_StepExtractCurvesFromGrid3D::declareInputModels(CT_StepInModelStructureManager& manager)

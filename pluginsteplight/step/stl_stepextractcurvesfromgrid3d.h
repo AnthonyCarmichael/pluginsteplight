@@ -10,11 +10,9 @@
 class STL_StepExtractCurvesFromGrid3D : public CT_AbstractStep
 {
     Q_OBJECT
-
     using RepulseImage              = STL_Grid3D<int>;
     using RepulseImagePtr           = RepulseImage*;
     using RepulseImagePtrConst      = RepulseImagePtr const;
-
     using Circle                    = CT_Circle;
     using CirclePtr                 = Circle*;
 
@@ -67,7 +65,6 @@ private:
     bool      _forkSearchActive;                    /*!<  */
     int       _nForkLevels;                         /*!<  */
     int       _nSnakesMax;
-
 };
 
 #endif // STL_STEPEXTRACTCURVESFROMGRID3D_H

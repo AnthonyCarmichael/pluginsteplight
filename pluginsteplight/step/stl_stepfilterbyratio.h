@@ -16,7 +16,6 @@ class STL_StepFilterByRatio : public CT_AbstractStep
     using ConstGrid3D             = const Grid3D;
     using ConstGrid3DPtr          = ConstGrid3D*;
     using ConstGrid3DPtrConst     = ConstGrid3DPtr const;
-
     using Vec3d = Eigen::Vector3d;
     using Vec3f = Eigen::Vector3f;
 

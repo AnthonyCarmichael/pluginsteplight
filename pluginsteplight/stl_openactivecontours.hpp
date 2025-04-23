@@ -254,7 +254,6 @@ void STL_OpenActiveContours<DataT>::markRepulsion( double repulse_factor )
     //     // Si son pixel n'est pas deja marque alors on fait la marque autour, sinon on ne fait rien
     //     Eigen::Vector3i currPix = _grid3d->cartesian_to_pixel(curr_point);
 
-    //     // À revoir!
     //     // Pour chaque rayon de l'espace de Hough on calcule la bbox des elements qui intersectent le cercle represente par curr_point
     //     for ( int currW = 0 ; currW < dimw ; currW++ )
     //     {
@@ -863,7 +862,6 @@ void STL_OpenActiveContours< DataT >::relax(int nIterMax,
     int npts = get_n_points();
 
     double rho = 1.0/timeStep;
-    // À revoir (4 ou 3?)
     Eigen::MatrixXd pointsNextIteration( npts, 3 );
 
     double averageMovement3D = std::numeric_limits<double>::max();
@@ -939,7 +937,6 @@ template< class DataT >
 Eigen::MatrixXd* STL_OpenActiveContours< DataT >::getGradientEnergyOrthogonalImageMatrix( double globalWeight ) const
 {
     int npts = get_n_points();
-        // À revoir (4 ou 3?)
     Eigen::MatrixXd* rslt = new Eigen::MatrixXd( npts, 3 );
 
     // Calcul du gradient de l'energie d'image en chaque point du contours
