@@ -123,15 +123,12 @@ STL_Grid3D<DataT>* STL_Grid3D<DataT>::get_filtered_grid_by_neigbhours(int neighb
     }
 
     for (int z = 0; z < _dimz; ++z) {
-
-        // Pour chaque tranche de z, on ne conserve que les maximas
-        DataT* slice_start = &filtered_grid->_data[z * _dimx * _dimy];
         for (int x = 0; x < _dimx; ++x) {
             for (int y = 0; y < _dimy; ++y) {
-                DataT* currVal = slice_start + (y * _dimx) + x;
+                DataT currVal = this->value(x,y,z);
 
                 // Si la cellule courante est à 0, on passe
-                if (*currVal == 0)
+                if (currVal == 0)
                     continue;
 
                 bool is_maxima = true;
@@ -146,9 +143,9 @@ STL_Grid3D<DataT>* STL_Grid3D<DataT>::get_filtered_grid_by_neigbhours(int neighb
 
                         // Vérification des limites de la grille
                         if (nx >= 0 && ny >= 0 && nx < _dimx && ny < _dimy) {
-                            DataT* neiVal = slice_start + (ny * _dimx) + nx;
+                            DataT neiVal = value(nx,ny,z);
 
-                            if (*currVal < *neiVal) {
+                            if (currVal < neiVal) {
                                 is_maxima = false;
                                 break;
                             }
@@ -158,13 +155,11 @@ STL_Grid3D<DataT>* STL_Grid3D<DataT>::get_filtered_grid_by_neigbhours(int neighb
 
                 // Si la cellule n'est pas un maxima, on la met à 0
                 if (!is_maxima) {
-                    *currVal = 0;
+                    filtered_grid->setValue(x,y,z,0);
                 }
             }
         }
     }
-
-    //filtered_grid->setRealRayValueDivadedByVisit();
 
     return filtered_grid;
 }
@@ -275,8 +270,6 @@ STL_Grid3D<DataT>* STL_Grid3D<DataT>::get_filtered_grid3d_using_fast_filter(doub
             delete endPoint2;
         }
     }
-
-    //filtered_grid3d->setRealRayValueDivadedByVisit();
 
     delete filter_visitor;
     delete set_value_visitor;
