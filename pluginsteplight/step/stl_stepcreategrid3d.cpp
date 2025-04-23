@@ -198,7 +198,7 @@ void STL_STEPCreateGrid3D::compute()
             }
         }
 
-        // Quick fix pour corriger la perte des pointeurs du nuage de points lors du multithread
+        // Quick fix pour corriger la perte d'information lors du multithread
         grid_3d->setPointCloudPtr(inPointCloud,inNormalCloud);
         grid_3d->setBotTop(bbox_bot,bbox_top);
 
@@ -206,9 +206,7 @@ void STL_STEPCreateGrid3D::compute()
         grid_3d->setGridRayLength(grid_ray);
         grid_3d->setRealRayValueDivadedByVisit();
 
-        // Compute MinMax pour la grille de wooTraversal et des rayons
         grid_3d->computeMinMax();
-        grid_3d->getGridRayLength()->computeMinMax();
 
         PS_LOG->addInfoMessage(LogInterface::error, tr("Min value %1").arg(grid_3d->dataMin()));
         PS_LOG->addInfoMessage(LogInterface::error, tr("Max value %1").arg(grid_3d->dataMax()));

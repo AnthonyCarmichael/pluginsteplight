@@ -527,6 +527,8 @@ void STL_Grid3D<DataT>::setBotTop(Vec3d bot, Vec3d top){
 
 template< class DataT >
 void STL_Grid3D<DataT>::setRealRayValueDivadedByVisit(){
+    // Cette méthode permet d'estimer la longueur des rayons par cellule.
+    // On divise la valeur du cumule des rayons par le nombre de visites pour un x,y,z de la grille.
     for (int x= 0; x < _dimx; ++x) {
         for (int y = 0; y < _dimy; ++y) {
             for (int z = 0; z < _dimz; ++z) {
